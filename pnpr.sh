@@ -36,4 +36,8 @@ else
     if [ "$manageCommand" = "destroy" ] ; then
         docker rm $containerName
     fi
+
+    if [ "$manageCommand" = "console" ] ; then
+        docker exec -i -t $containerName bash
+    fi
 fi
