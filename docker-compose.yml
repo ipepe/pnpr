@@ -1,0 +1,12 @@
+version: '2'
+services:
+  pnpr:
+    build: ./pnpr
+    ports:
+     - "2222:22"
+     - "8080:80"
+     - "15432:5432"
+    volumes:
+      - ./pnpr_data:/data
+
+#docker-compose up --build
