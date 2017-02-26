@@ -31,13 +31,14 @@ else
                 docker run -d --name ${containerName} -h ${containerName} -e VIRTUAL_HOST=$3 ${extraArgs} ${imageName}
             fi
         fi
-    fi
-
-    if [ "$manageCommand" = "destroy" ] ; then
+    elif [ "$manageCommand" = "destroy" ] ; then
+        docker stop $containerName
         docker rm $containerName
-    fi
-
-    if [ "$manageCommand" = "console" ] ; then
+    elif [ "$manageCommand" = "stop" ] ; then
+        docker stop $containerName
+    elif [ "$manageCommand" = "console" ] ; then
         docker exec -i -t $containerName bash
+    else
+        echo Unknown command $manageCommand
     fi
 fi
