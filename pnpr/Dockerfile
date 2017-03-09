@@ -11,7 +11,7 @@ ENV LC_ALL en_US.UTF-8
 ENV DEBIAN_FRONTEND noninteractive
 
 # instalacja i konfiguracja Ruby
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
   git make gcc g++ nodejs npm openssl libssl-dev curl libpq-dev \
   cron libreadline-dev imagemagick wget nano htop sudo apt-utils libjpeg-dev libpng-dev
 RUN ln -s /usr/bin/nodejs /usr/bin/node
@@ -30,7 +30,7 @@ RUN su - webapp -c "gem install bundler"
 RUN su - webapp -c "rbenv rehash"
 
 # SSH dla Capistrano
-RUN apt-get install -y openssh-server
+RUN apt-get update && apt-get install -y openssh-server
 RUN su - webapp -c "mkdir -p /home/webapp/.ssh"
 COPY ./authorized_keys /home/webapp/.ssh/
 RUN chown webapp:webapp /home/webapp/.ssh/authorized_keys && chmod 600 /home/webapp/.ssh/authorized_keys
@@ -50,7 +50,7 @@ RUN rm -rf /var/lib/postgresql/9.6/main
 
 # Instalacja Nginx + Passenger
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7 && \
- apt-get install -y apt-transport-https ca-certificates && \
+ apt-get update && apt-get install -y apt-transport-https ca-certificates && \
  echo "deb https://oss-binaries.phusionpassenger.com/apt/passenger xenial main" > /etc/apt/sources.list.d/passenger.list && \
  chown root: /etc/apt/sources.list.d/passenger.list && \
  chmod 600 /etc/apt/sources.list.d/passenger.list && \
