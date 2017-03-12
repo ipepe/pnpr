@@ -27,9 +27,11 @@ else
                 echo pnpr also needs virtual_hosts information when starting container
             else
                 docker run -d --name ${containerName} -h ${containerName} -e VIRTUAL_HOST=$3 ${extraArgs} ${imageName}
+                echo docker run -d --name ${containerName} -h ${containerName} -e VIRTUAL_HOST=$3 ${extraArgs} ${imageName}
             fi
         else
             docker start ${containerName}
+            echo docker start ${containerName}
         fi
     elif [ "$manageCommand" = "destroy" ] ; then
         docker stop $containerName
