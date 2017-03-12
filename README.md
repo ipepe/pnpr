@@ -11,3 +11,12 @@ git clone https://github.com/ipepe/pnpr.git
 bash 1-
 ```
 pnpr foos start 
+
+# how to update?
+```
+git pull
+```
+
+```
+bash 3-install.pnpr.sh
+```

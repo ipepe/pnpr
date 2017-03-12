@@ -32,8 +32,6 @@ RUN su - webapp -c "rbenv rehash"
 # SSH dla Capistrano
 RUN apt-get update && apt-get install -y openssh-server
 RUN su - webapp -c "mkdir -p /home/webapp/.ssh"
-COPY ./authorized_keys /home/webapp/.ssh/
-RUN chown webapp:webapp /home/webapp/.ssh/authorized_keys && chmod 600 /home/webapp/.ssh/authorized_keys
 
 # instalacja postgres
 ENV PGDATA /data/db
@@ -66,6 +64,9 @@ RUN echo "webapp ALL=(ALL) NOPASSWD:/usr/bin/service nginx *" > /etc/sudoers.d/0
 
 #TODO: redis
 #TODO: https://github.com/mperham/sidekiq/blob/master/examples/systemd/sidekiq.service
+
+COPY ./authorized_keys /home/webapp/.ssh/
+RUN chown webapp:webapp /home/webapp/.ssh/authorized_keys && chmod 600 /home/webapp/.ssh/authorized_keys
 
 ENV DB_USER=webapp DB_PASSWORD=Password1 DB_NAME=webapp RAILS_ENV=production
 RUN echo RAILS_ENV=production >> /home/webapp/.bashrc
