@@ -23,13 +23,13 @@ else
 
     if [ "$manageCommand" = "start" ] ; then
         if [ "x${containerExists}" = "x" ] ; then
-            docker start ${containerName}
-        else
             if [ "x$3" = "x" ] ; then
                 echo pnpr also needs virtual_hosts information when starting container
             else
                 docker run -d --name ${containerName} -h ${containerName} -e VIRTUAL_HOST=$3 ${extraArgs} ${imageName}
             fi
+        else
+            docker start ${containerName}
         fi
     elif [ "$manageCommand" = "destroy" ] ; then
         docker stop $containerName
