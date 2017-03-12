@@ -22,7 +22,7 @@ else
     containerExists="x`docker ps -a -f name=${containerName} | grep -v CONTAINER`"
 
     if [ "$manageCommand" = "start" ] ; then
-        if [ "x${containerExists}" = "x" ] ; then
+        if [ "${containerExists}" = "x" ] ; then
             if [ "x$3" = "x" ] ; then
                 echo pnpr also needs virtual_hosts information when starting container
             else
