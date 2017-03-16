@@ -26,6 +26,7 @@ fi
 
 service ssh start
 service nginx start
+service redis-server start
 cron
 tail -f /var/log/nginx/access.log
 #tail -f --retry /data/app/log/production.log

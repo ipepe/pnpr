@@ -60,9 +60,10 @@ COPY ./nginx.conf /etc/nginx/
 RUN rm -f /etc/nginx/sites-enabled/default
 COPY ./webapp.conf /etc/nginx/sites-available/webapp
 RUN ln -s /etc/nginx/sites-available/webapp /etc/nginx/sites-enabled/webapp
-RUN echo "webapp ALL=(ALL) NOPASSWD:/usr/bin/service nginx *" > /etc/sudoers.d/00_webapp_sudo_rules
+RUN usermod -a -G sudo webapp
 
 RUN apt-get update && apt-get -y install redis-server
+COPY ./sidekiq.conf /etc/init/sidekiq.conf
 
 COPY ./authorized_keys /home/webapp/.ssh/
 RUN chown webapp:webapp /home/webapp/.ssh/authorized_keys && chmod 600 /home/webapp/.ssh/authorized_keys
@@ -74,7 +75,8 @@ RUN chmod +x /docker-entrypoint.sh && \
  mkdir -p /home/webapp/webapp && \
  chown -R webapp:webapp "/home/webapp" && \
  touch /first_run.marker && \
- apt-get clean
+ apt-get clean && \
+ rm -rf /tmp/*
 
 VOLUME "/data"
 EXPOSE 5432 22 80
