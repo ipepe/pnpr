@@ -62,8 +62,7 @@ COPY ./webapp.conf /etc/nginx/sites-available/webapp
 RUN ln -s /etc/nginx/sites-available/webapp /etc/nginx/sites-enabled/webapp
 RUN echo "webapp ALL=(ALL) NOPASSWD:/usr/bin/service nginx *" > /etc/sudoers.d/00_webapp_sudo_rules
 
-#TODO: redis
-#TODO: https://github.com/mperham/sidekiq/blob/master/examples/systemd/sidekiq.service
+RUN apt-get update && apt-get -y install redis-server
 
 COPY ./authorized_keys /home/webapp/.ssh/
 RUN chown webapp:webapp /home/webapp/.ssh/authorized_keys && chmod 600 /home/webapp/.ssh/authorized_keys
