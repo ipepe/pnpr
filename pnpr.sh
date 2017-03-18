@@ -4,7 +4,7 @@ imageName="ipepe/pnpr:v2"
 if [ "x$1" = "xbuild" ] ; then
     if [ "x$2" = "x" ] ; then
         # za jakis czas pewnie tutaj dam github.com/ipepe/pnpr/raw/master/pnpr/Dockerfile
-        docker build -t ${imageName} ./pnpr
+        docker build -t ${imageName} ./src
     else
         docker build -t ${imageName} $2
     fi
