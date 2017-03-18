@@ -26,5 +26,5 @@ sudo service docker restart
 sudo systemctl daemon-reload
 sudo systemctl restart docker
 
-echo Current storage driver is: (be worried if its not storage driver)
+echo "Current storage driver is: (be worried if its not storage driver)"
 sudo docker info | grep Storage\ Driver
