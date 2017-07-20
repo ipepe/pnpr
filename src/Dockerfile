@@ -13,7 +13,8 @@ ENV DEBIAN_FRONTEND noninteractive
 # instalacja i konfiguracja Ruby
 RUN apt-get update && apt-get install -y \
   git make gcc g++ nodejs npm openssl libssl-dev curl libpq-dev \
-  cron libreadline-dev imagemagick wget nano htop sudo apt-utils libjpeg-dev libpng-dev
+  cron libreadline-dev libmagickwand-dev imagemagick wget nano htop sudo apt-utils libjpeg-dev libpng-dev
+
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 
 RUN groupadd -g 1000 webapp
