@@ -1,5 +1,5 @@
 #!/bin/bash
-imageName="ipepe/pnpr:v2"
+imageName="ipepe/pnpr:v3"
 
 if [ "x$1" = "xbuild" ] ; then
     if [ "x$2" = "x" ] ; then
