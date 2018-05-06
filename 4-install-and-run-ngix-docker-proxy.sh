@@ -17,7 +17,7 @@ docker run --restart=unless-stopped -d -p 80:80 -p 443:443 \
 docker run --restart=unless-stopped -d \
     --name nginx-gen \
     --volumes-from nginx \
-    -v /opt/nginx-proxy/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro \
+    -v /opt/nginx-proxy-conf/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro \
     -v /var/run/docker.sock:/tmp/docker.sock:ro \
     --label com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen \
     jwilder/docker-gen \
