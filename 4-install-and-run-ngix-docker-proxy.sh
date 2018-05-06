@@ -12,7 +12,7 @@ docker run --restart=always -d -p 80:80 -p 443:443 \
     -v /etc/nginx/conf.d  \
     -v /etc/nginx/vhost.d \
     -v /usr/share/nginx/html \
-    -v /optnginx-proxy-conf/certs:/etc/nginx/certs:ro \
+    -v /opt/nginx-proxy-conf/certs:/etc/nginx/certs:ro \
     --label com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy \
     nginx
 
@@ -28,6 +28,6 @@ docker run --restart=always -d \
 docker run --restart=always -d \
      --name nginx-letsencrypt \
      --volumes-from nginx \
-     -v /optnginx-proxy-conf/certs:/etc/nginx/certs:rw \
+     -v /opt/nginx-proxy-conf/certs:/etc/nginx/certs:rw \
      -v /var/run/docker.sock:/var/run/docker.sock:ro \
      jrcs/letsencrypt-nginx-proxy-companion
