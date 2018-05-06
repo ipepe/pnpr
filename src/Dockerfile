@@ -24,8 +24,8 @@ RUN su - webapp -c "git clone https://github.com/sstephenson/rbenv.git /home/web
 RUN echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:${PATH}" | cat - /home/webapp/.bashrc > /tmp/out && mv /tmp/out /home/webapp/.bashrc
 RUN echo "export RBENV_ROOT=/home/webapp/.rbenv" | cat - /home/webapp/.bashrc > /tmp/out && mv /tmp/out /home/webapp/.bashrc
 RUN su - webapp -c "git clone https://github.com/sstephenson/ruby-build.git /home/webapp/.rbenv/plugins/ruby-build"
-RUN su - webapp -c "rbenv install 2.3.3"
-RUN su - webapp -c "rbenv global 2.3.3"
+RUN su - webapp -c "rbenv install 2.4.3"
+RUN su - webapp -c "rbenv global 2.4.3"
 RUN su - webapp -c "echo gem: --no-rdoc --no-ri > ~/.gemrc"
 RUN su - webapp -c "gem install bundler"
 RUN su - webapp -c "rbenv rehash"
@@ -42,10 +42,10 @@ RUN curl -o /usr/local/bin/gosu -SL 'https://github.com/tianon/gosu/releases/dow
 
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-RUN apt-get update && apt-get install -y postgresql-9.6 postgresql-contrib-9.6 postgresql-client-9.6
+RUN apt-get update && apt-get install -y postgresql-10 postgresql-contrib-10 postgresql-client-10
 RUN mkdir -p /var/run/postgresql && chown -R postgres /var/run/postgresql
-ENV PATH /usr/lib/postgresql/9.6/bin:$PATH
-RUN rm -rf /var/lib/postgresql/9.6/main
+ENV PATH /usr/lib/postgresql/10/bin:$PATH
+RUN rm -rf /var/lib/postgresql/10/main
 
 # Instalacja Nginx + Passenger
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7 && \
