@@ -4,13 +4,15 @@ mkdir -p /opt
 
 cp -r src/nginx-proxy-conf/ /opt/
 
+curl https://raw.githubusercontent.com/jwilder/nginx-proxy/master/nginx.tmpl > /opt/nginx-proxy-conf/nginx.tmpl
+
 docker run --restart=always -d -p 80:80 -p 443:443 \
     --name nginx \
     -v /opt/nginx-proxy-conf/certs:/opt \
     -v /etc/nginx/conf.d  \
     -v /etc/nginx/vhost.d \
     -v /usr/share/nginx/html \
-    -v /path/to/certs:/etc/nginx/certs:ro \
+    -v /optnginx-proxy-conf/certs:/etc/nginx/certs:ro \
     --label com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy \
     nginx
 
@@ -26,6 +28,6 @@ docker run --restart=always -d \
 docker run --restart=always -d \
      --name nginx-letsencrypt \
      --volumes-from nginx \
-     -v /path/to/certs:/etc/nginx/certs:rw \
+     -v /optnginx-proxy-conf/certs:/etc/nginx/certs:rw \
      -v /var/run/docker.sock:/var/run/docker.sock:ro \
      jrcs/letsencrypt-nginx-proxy-companion
