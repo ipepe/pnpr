@@ -4,8 +4,6 @@ mkdir -p /opt
 
 cp -r src/nginx-proxy-conf/ /opt/
 
-curl https://raw.githubusercontent.com/jwilder/nginx-proxy/master/nginx.tmpl > /opt/nginx-proxy-conf/nginx.tmpl
-
 docker run --restart=always -d -p 80:80 -p 443:443 \
     --name nginx \
     -v /opt/nginx-proxy-conf/certs:/opt \

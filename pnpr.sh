@@ -22,7 +22,7 @@ else
           exit 1
         fi
 
-        extraArgs="--restart=unless-stopped -i -t -P -v /opt/docker/$containerName/data:/data"
+        extraArgs="--restart=always -i -t -P -v /opt/docker/$containerName/data:/data"
         containerExists="x`docker ps -a -f name=${containerName} | grep -v CONTAINER`"
 
         if [ "$manageCommand" = "start" ] ; then
