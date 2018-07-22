@@ -24,8 +24,8 @@ RUN su - webapp -c "git clone https://github.com/sstephenson/rbenv.git /home/web
 RUN echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:${PATH}" | cat - /home/webapp/.bashrc > /tmp/out && mv /tmp/out /home/webapp/.bashrc
 RUN echo "export RBENV_ROOT=/home/webapp/.rbenv" | cat - /home/webapp/.bashrc > /tmp/out && mv /tmp/out /home/webapp/.bashrc
 RUN su - webapp -c "git clone https://github.com/sstephenson/ruby-build.git /home/webapp/.rbenv/plugins/ruby-build"
-RUN su - webapp -c "rbenv install 2.4.3"
-RUN su - webapp -c "rbenv global 2.4.3"
+RUN su - webapp -c "rbenv install 2.3.1"
+RUN su - webapp -c "rbenv global 2.3.1"
 RUN su - webapp -c "echo gem: --no-rdoc --no-ri > ~/.gemrc"
 RUN su - webapp -c "gem install bundler"
 RUN su - webapp -c "rbenv rehash"
@@ -79,7 +79,7 @@ RUN chmod +x /docker-entrypoint.sh && \
  apt-get clean && \
  rm -rf /tmp/*
 
-HEALTHCHECK --interval=60s --timeout=60s --start-period=60s CMD curl -f http://localhost/ || exit 1
+HEALTHCHECK --interval=60s --timeout=60s --start-period=60s CMD curl -f https://localhost/ || exit 1
 
 VOLUME "/data"
 EXPOSE 5432 22 80

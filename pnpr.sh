@@ -1,5 +1,5 @@
 #!/bin/bash
-imageName="ipepe/pnpr:v5"
+imageName="ipepe/pnpr:v6"
 letsencryptEmail=""
 
 
