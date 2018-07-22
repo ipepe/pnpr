@@ -30,8 +30,15 @@ else
 fi
 
 if [ ! -f /home/webapp/webapp/shared/.env.production ]; then
+    echo Generating secret key base
     mkdir -p /home/webapp/webapp/shared/
     echo SECRET_KEY_BASE=`cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 128 | head -n 1` > /home/webapp/webapp/shared/.env.production
+fi
+
+if [ ! -f /data/certs/webapp.crt ]; then
+    echo Generating OpenSSL certificate for localhost
+    mkdir -p /data/certs/
+    openssl req -x509 -newkey rsa:4096 -keyout /data/certs/webapp.key -out /data/certs/webapp.crt -days 2048 -subj '/CN=localhost' -nodes
 fi
 
 service ssh start

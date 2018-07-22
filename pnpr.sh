@@ -1,17 +1,17 @@
 #!/bin/bash
-imageName="ipepe/pnpr:v4"
+imageName="ipepe/pnpr:v5"
 letsencryptEmail=""
 
-if [ "x${letsencryptEmail}" = "x" ] ; then
-    echo "Please insert email into file pnpr.sh"
+
+if [ "x$1" = "xbuild" ] ; then
+    if [ "x$2" = "x" ] ; then
+        docker build -t ${imageName} ./src
+    else
+        docker build -t ${imageName} $2
+    fi
 else
-    if [ "x$1" = "xbuild" ] ; then
-        if [ "x$2" = "x" ] ; then
-            # za jakis czas pewnie tutaj dam github.com/ipepe/pnpr/raw/master/pnpr/Dockerfile
-            docker build -t ${imageName} ./src
-        else
-            docker build -t ${imageName} $2
-        fi
+    if [ "x${letsencryptEmail}" = "x" ] ; then
+        echo "Please insert email into file pnpr.sh"
     else
         containerName=$1
         manageCommand=$2
