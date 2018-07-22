@@ -79,6 +79,8 @@ RUN chmod +x /docker-entrypoint.sh && \
  apt-get clean && \
  rm -rf /tmp/*
 
+HEALTHCHECK --interval=60s --timeout=60s --start-period=60s CMD curl -f http://localhost/ || exit 1
+
 VOLUME "/data"
 EXPOSE 5432 22 80
 CMD ["/docker-entrypoint.sh"]

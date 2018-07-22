@@ -19,9 +19,19 @@ if [ ! -f $PGDATA/postgresql.conf ]; then #we can assume its first run
     sudo -u postgres psql -c "CREATE USER webapp WITH PASSWORD 'Password1' LOGIN;"
     sudo -u postgres psql -c "ALTER USER webapp CREATEDB;"
     sudo -u postgres psql -c "CREATE DATABASE webapp WITH OWNER webapp ENCODING 'UTF-8' TEMPLATE template1;"
+    sudo -u postgres psql -c "CREATE ROLE readonly LOGIN PASSWORD 'Password1';"
+    sudo -u postgres psql -c "GRANT CONNECT ON DATABASE webapp TO readonly;"
+    sudo -u postgres psql -c "GRANT USAGE ON SCHEMA public TO readonly;"
+    sudo -u postgres psql -c "GRANT SELECT ON ALL TABLES IN SCHEMA public TO readonly;"
+    sudo -u postgres psql -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO readonly;"
     rm /first_run.marker
 else
     service postgresql start
+fi
+
+if [ ! -f /home/webapp/webapp/shared/.env.production ]; then
+    mkdir -p /home/webapp/webapp/shared/
+    echo SECRET_KEY_BASE=`cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 128 | head -n 1` > /home/webapp/webapp/shared/.env.production
 fi
 
 service ssh start
