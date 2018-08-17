@@ -15,3 +15,4 @@ sudo cp /etc/fstab /etc/fstab.bkp_before_swap_config
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 sudo sysctl vm.swappiness=10
 sudo sh -c "echo 'vm.swappiness=10' >> /etc/sysctl.conf"
+sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y

@@ -82,5 +82,5 @@ RUN chmod +x /docker-entrypoint.sh && \
 HEALTHCHECK --interval=60s --timeout=60s --start-period=60s CMD curl -f https://localhost/ || exit 1
 
 VOLUME "/data"
-EXPOSE 5432 22 80
+EXPOSE 5432 22 80 443
 CMD ["/docker-entrypoint.sh"]
