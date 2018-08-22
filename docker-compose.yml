@@ -1,7 +1,7 @@
 version: '2'
 services:
   server:
-    build: .
+    image: ipepe/pnpr
     restart: always
     ports:
      - "3322:22"
