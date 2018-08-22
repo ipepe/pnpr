@@ -1,7 +1,7 @@
 version: '2'
 services:
   server:
-    build: ./src
+    build: .
     ports:
      - "3322:22"
      - "8080:80"

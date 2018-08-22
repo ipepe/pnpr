@@ -33,8 +33,8 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7 &&
     echo "deb https://oss-binaries.phusionpassenger.com/apt/passenger xenial main" > /etc/apt/sources.list.d/passenger.list && \
     apt-get update && apt-get install -y nginx-extras passenger
 
-COPY ./nginx.conf /etc/nginx/
-COPY ./webapp.conf /etc/nginx/sites-enabled/default
+COPY nginx.conf /etc/nginx/
+COPY webapp.conf /etc/nginx/sites-enabled/default
 
 # create webapp user
 RUN groupadd -g 1000 webapp && \

@@ -5,7 +5,7 @@ letsencryptEmail=""
 
 if [ "x$1" = "xbuild" ] ; then
     if [ "x$2" = "x" ] ; then
-        docker build -t ${imageName} ./src
+        docker build -t ${imageName} .
     else
         docker build -t ${imageName} $2
     fi
