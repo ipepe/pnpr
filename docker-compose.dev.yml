@@ -8,6 +8,6 @@ services:
      - "8443:443"
      - "15432:5432"
     volumes:
-      - ./pnpr_data:/data
+      - ./data:/data
 
 # docker-compose -f docker-compose.dev.yml up --build

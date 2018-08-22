@@ -2,7 +2,7 @@
 
 mkdir -p /opt
 
-cp -r src/nginx-proxy-conf/ /opt/
+cp -r nginx-proxy-conf/ /opt/
 
 docker run --restart=always -d -p 80:80 -p 443:443 \
     --name nginx \
