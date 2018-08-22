@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 MAINTAINER docker@ipepe.pl
 
 # setup envs
-ARG RUBY_VERSION=2.3.1
+ARG RUBY_VERSION=2.4.3
 ENV PGDATA=/data/db DEBIAN_FRONTEND=noninteractive LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 
 # setup locale for postgres and other packages
