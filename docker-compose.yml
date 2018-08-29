@@ -1,7 +1,7 @@
 version: '2'
 services:
   server:
-    image: ipepe/pnpr
+    image: ipepe/pnpr:ruby-2.3.1
     restart: always
     ports:
      - "3322:22"

@@ -1,9 +1,18 @@
 FROM ubuntu:16.04
 MAINTAINER docker@ipepe.pl
 
-# setup envs
+# setup args
 ARG RUBY_VERSION=2.3.1
+ARG RAILS_ENV=staging
+ARG FRIENDLY_ERROR_PAGES=on
+ARG WITH_SUDO=true
+
+# setup envs
 ENV PGDATA=/data/db DEBIAN_FRONTEND=noninteractive LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
+RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /etc/environment && \
+    echo "RAILS_ENV=${RAILS_ENV}" >> /etc/environment && \
+    echo "FRIENDLY_ERROR_PAGES=${FRIENDLY_ERROR_PAGES}" >> /etc/environment && \
+    echo "WITH_SUDO=${WITH_SUDO}" >> /etc/environment
 
 # setup locale for postgres and other packages
 RUN apt-get update && apt-get install -y locales && \
@@ -35,11 +44,20 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7 &&
 
 COPY nginx.conf /etc/nginx/
 COPY webapp.conf /etc/nginx/sites-enabled/default
+RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/default
 
 # create webapp user
 RUN groupadd -g 1000 webapp && \
     useradd -m -s /bin/bash -g webapp -u 1000 webapp && \
     echo "webapp:Password1" | chpasswd
+
+# add webapp user to sudo
+RUN if [ $WITH_SUDO = "true" ] ; then \
+        apt-get update && \
+        apt-get install -y sudo && \
+        usermod -a -G sudo webapp && \
+        echo "webapp ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/00_webapp_sudo_rules \
+    ; fi
 
 # setup rbenv and install ruby
 USER webapp

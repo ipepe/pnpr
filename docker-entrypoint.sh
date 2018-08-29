@@ -32,10 +32,10 @@ else
     service postgresql start
 fi
 
-if [ ! -f /home/webapp/webapp/shared/.env.staging ]; then
+if [ ! -f "/home/webapp/webapp/shared/.env.$RAILS_ENV" ]; then
     echo Generating secret key base
-    echo SECRET_KEY_BASE=`cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 128 | head -n 1` > /home/webapp/webapp/shared/.env.staging
-    chown webapp:webapp /home/webapp/webapp/shared/.env.staging
+    echo SECRET_KEY_BASE=`cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 128 | head -n 1` > "/home/webapp/webapp/shared/.env.$RAILS_ENV"
+    chown webapp:webapp "/home/webapp/webapp/shared/.env.$RAILS_ENV"
 fi
 
 if [ ! -f /data/certs/webapp.crt ]; then
