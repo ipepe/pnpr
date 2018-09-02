@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 MAINTAINER docker@ipepe.pl
 
 # setup args
@@ -24,13 +24,12 @@ RUN apt-get update && apt-get install -y locales && \
 RUN apt-get update && apt-get install -y \
     git make gcc g++ nodejs npm openssl libssl-dev curl libpq-dev \
     cron libreadline-dev libmagickwand-dev imagemagick wget nano htop \
-    openssh-server apt-utils libjpeg-dev libpng-dev redis-server && \
-    ln -s /usr/bin/nodejs /usr/bin/node
+    openssh-server apt-utils libjpeg-dev libpng-dev redis-server
 
 # install postgres 10
 RUN curl -o /usr/local/bin/gosu -SL 'https://github.com/tianon/gosu/releases/download/1.1/gosu' && \
     chmod 700 /usr/local/bin/gosu && \
-	echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" >> /etc/apt/sources.list.d/pgdg.list && \
+	echo "deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main" >> /etc/apt/sources.list.d/pgdg.list && \
     wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
     apt-get update && apt-get install -y postgresql-10 postgresql-contrib-10 postgresql-client-10 && \
     mkdir -p /var/run/postgresql && chown -R postgres /var/run/postgresql && \
@@ -39,7 +38,7 @@ RUN curl -o /usr/local/bin/gosu -SL 'https://github.com/tianon/gosu/releases/dow
 # install and configure nginx and passenger
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7 && \
     apt-get update && apt-get install -y apt-transport-https ca-certificates && \
-    echo "deb https://oss-binaries.phusionpassenger.com/apt/passenger xenial main" > /etc/apt/sources.list.d/passenger.list && \
+    echo "deb https://oss-binaries.phusionpassenger.com/apt/passenger bionic main" > /etc/apt/sources.list.d/passenger.list && \
     apt-get update && apt-get install -y nginx-extras passenger
 
 COPY nginx.conf /etc/nginx/
