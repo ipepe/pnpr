@@ -1,0 +1,3 @@
+# todo:
+ * docker testing
+ * nodenv
