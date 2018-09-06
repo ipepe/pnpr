@@ -2,10 +2,10 @@ FROM ubuntu:18.04
 MAINTAINER docker@ipepe.pl
 
 # setup args
-ARG RUBY_VERSION=2.4.3
-ARG RAILS_ENV=production
-ARG FRIENDLY_ERROR_PAGES=off
-ARG WITH_SUDO=false
+ARG RUBY_VERSION=2.5.1
+ARG RAILS_ENV=staging
+ARG FRIENDLY_ERROR_PAGES=on
+ARG WITH_SUDO=true
 
 # setup envs
 ENV PGDATA=/data/db DEBIAN_FRONTEND=noninteractive LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
