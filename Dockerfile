@@ -65,13 +65,16 @@ RUN git clone https://github.com/sstephenson/rbenv.git /home/webapp/.rbenv && \
     git clone https://github.com/sstephenson/ruby-build.git /home/webapp/.rbenv/plugins/ruby-build && \
     echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:${PATH}" >> /home/webapp/.bashrc && \
     echo "export RBENV_ROOT=/home/webapp/.rbenv" >> /home/webapp/.bashrc && \
-    echo "export RAILS_ENV=${RAILS_ENV}" >> /home/webapp/.bashrc && \
     echo "gem: --no-rdoc --no-ri" > /home/webapp/.gemrc && \
     /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
     /home/webapp/.rbenv/bin/rbenv global ${RUBY_VERSION} && \
     /home/webapp/.rbenv/shims/gem install bundler && \
     /home/webapp/.rbenv/bin/rbenv rehash
 USER root
+RUN ln -s /home/webapp/.rbenv /root/.rbenv && \
+    echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:${PATH}" >> /root/.bashrc && \
+    echo "export RBENV_ROOT=/home/webapp/.rbenv" >> /root/.bashrc && \
+    echo "gem: --no-rdoc --no-ri" > /root/.gemrc
 
 # install docker-entrypoint and cleanup whole image with final setups
 RUN mkdir -p /home/webapp/webapp /home/webapp/.ssh && \
