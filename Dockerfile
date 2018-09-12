@@ -3,7 +3,7 @@ MAINTAINER docker@ipepe.pl
 
 # setup args
 ARG RUBY_VERSION=2.3.1
-ARG RAILS_ENV=staging
+ARG RAILS_ENV=test
 ARG FRIENDLY_ERROR_PAGES=on
 ARG WITH_SUDO=true
 
@@ -75,6 +75,8 @@ RUN ln -s /home/webapp/.rbenv /root/.rbenv && \
     echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:${PATH}" >> /root/.bashrc && \
     echo "export RBENV_ROOT=/home/webapp/.rbenv" >> /root/.bashrc && \
     echo "gem: --no-rdoc --no-ri" > /root/.gemrc
+
+ENV PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:${PATH}
 
 # install docker-entrypoint and cleanup whole image with final setups
 RUN mkdir -p /home/webapp/webapp /home/webapp/.ssh && \
