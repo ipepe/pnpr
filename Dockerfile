@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y \
     git make gcc g++ nodejs npm openssl libssl-dev curl libpq-dev \
     cron libreadline-dev libmagickwand-dev imagemagick wget nano htop \
     openssh-server apt-utils libjpeg-dev libpng-dev redis-server && \
+    npm install -g n && n 8 && npm install -g npm && \
     ln -s /usr/bin/nodejs /usr/bin/node
 
 # install postgres 10
