@@ -44,10 +44,14 @@ if [ ! -f /data/certs/webapp.crt ]; then
     openssl req -x509 -newkey rsa:4096 -keyout /data/certs/webapp.key -out /data/certs/webapp.crt -days 2048 -subj '/CN=localhost' -nodes
 fi
 
-chown -R webapp:webapp "/home/webapp"
+
 
 service ssh start
 service nginx start
 service redis-server start
 cron
+
+# takes very long, and might not be necessary to start
+chown -R webapp:webapp "/home/webapp" &
+
 tail -f /var/log/nginx/access.log

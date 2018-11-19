@@ -28,5 +28,5 @@ sudo systemctl daemon-reload
 sudo service docker restart
 sudo systemctl restart docker
 
-echo "Current storage driver is: (be worried if its not storage driver)"
+echo "Current storage driver is: (be worried if its not overlay2)"
 sudo docker info | grep Storage\ Driver

@@ -1,3 +1,4 @@
-# todo:
- * docker testing
- * nodenv
+# TODO:
+ * letsencrypt companion
+ * fix symbolic links
+ * dockerfile testing
