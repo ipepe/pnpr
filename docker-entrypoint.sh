@@ -45,11 +45,9 @@ fi
 if [ ! -f /data/authorized_keys ]; then
     echo "Creating authorized_keys file"
     touch /data/authorized_keys
+    ln -s /data/authorized_keys /home/webapp/.ssh/authorized_keys
+    chown webapp:webapp /home/webapp/.ssh/authorized_keys
 fi
-
-rm -f /home/webapp/.ssh/authorized_keys
-ln -s /data/authorized_keys /home/webapp/.ssh/authorized_keys
-chown webapp:webapp /data/authorized_keys
 
 chown -R webapp:webapp "/home/webapp"
 
