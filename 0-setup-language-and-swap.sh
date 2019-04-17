@@ -7,7 +7,7 @@ sudo sh -c "echo LC_ALL=en_US.UTF-8 >> /etc/environment"
 sudo sh -c "echo LANG=en_US.UTF-8>> /etc/environment"
 
 #swap
-sudo fallocate -l 10G /swapfile
+sudo fallocate -l 1G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile

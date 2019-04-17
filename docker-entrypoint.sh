@@ -49,10 +49,12 @@ if [ ! -f /data/authorized_keys ]; then
     chown webapp:webapp /home/webapp/.ssh/authorized_keys
 fi
 
-chown -R webapp:webapp "/home/webapp"
-
 service ssh start
 service nginx start
 service redis-server start
 cron
+
+# takes very long, and might not be necessary to start
+chown -R webapp:webapp "/home/webapp" &
+
 tail -f /var/log/nginx/access.log
