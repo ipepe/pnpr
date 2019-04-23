@@ -36,23 +36,20 @@ if [ ! -f "/home/webapp/webapp/shared/.env.$RAILS_ENV" ]; then
     chown webapp:webapp "/home/webapp/webapp/shared/.env.$RAILS_ENV"
 fi
 
-if [ ! -f /data/certs/webapp.crt ]; then
-    echo Generating OpenSSL certificate for localhost
-    mkdir -p /data/certs/
-    openssl req -x509 -newkey rsa:4096 -keyout /data/certs/webapp.key -out /data/certs/webapp.crt -days 2048 -subj '/CN=localhost' -nodes
-fi
-
 if [ ! -f /data/authorized_keys ]; then
     echo "Creating authorized_keys file"
     touch /data/authorized_keys
+    rm /home/webapp/.ssh/authorized_keys
     ln -s /data/authorized_keys /home/webapp/.ssh/authorized_keys
-    chown webapp:webapp /home/webapp/.ssh/authorized_keys
+    chown webapp:webapp /home/webapp/.ssh/*
 fi
-
-chown -R webapp:webapp "/home/webapp"
 
 service ssh start
 service nginx start
 service redis-server start
 cron
+
+# takes very long, and might not be necessary to start
+chown -R webapp:webapp "/home/webapp" &
+
 tail -f /var/log/nginx/access.log
