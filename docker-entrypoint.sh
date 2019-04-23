@@ -6,8 +6,6 @@ mkdir -p $PGDATA /data/shared /data/current
 chown -R webapp:webapp /data/shared
 chown -R webapp:webapp /data/current
 chown -R postgres "$PGDATA"
-touch /data/authorized_keys
-ln -s /data/authorized_keys /home/webapp/.ssh/authorized_keys
 ln -s /data/shared /home/webapp/webapp/shared
 ln -s /data/current /home/webapp/webapp/current
 rm -rf /var/lib/postgresql/10/main
@@ -38,13 +36,13 @@ if [ ! -f "/home/webapp/webapp/shared/.env.$RAILS_ENV" ]; then
     chown webapp:webapp "/home/webapp/webapp/shared/.env.$RAILS_ENV"
 fi
 
-if [ ! -f /data/certs/webapp.crt ]; then
-    echo Generating OpenSSL certificate for localhost
-    mkdir -p /data/certs/
-    openssl req -x509 -newkey rsa:4096 -keyout /data/certs/webapp.key -out /data/certs/webapp.crt -days 2048 -subj '/CN=localhost' -nodes
+if [ ! -f /data/authorized_keys ]; then
+    echo "Creating authorized_keys file"
+    touch /data/authorized_keys
+    rm /home/webapp/.ssh/authorized_keys
+    ln -s /data/authorized_keys /home/webapp/.ssh/authorized_keys
+    chown webapp:webapp /home/webapp/.ssh/*
 fi
-
-
 
 service ssh start
 service nginx start

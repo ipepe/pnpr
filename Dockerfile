@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 MAINTAINER docker@ipepe.pl
 
 # setup args
-ARG RUBY_VERSION=2.4.3
+ARG RUBY_VERSION=2.3.1
 ARG RAILS_ENV=production
 ARG FRIENDLY_ERROR_PAGES=off
 ARG WITH_SUDO=false
@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y \
     git make gcc g++ nodejs npm openssl libssl-dev curl libpq-dev \
     cron libreadline-dev libmagickwand-dev imagemagick wget nano htop \
     openssh-server apt-utils libjpeg-dev libpng-dev redis-server && \
+    npm install -g n && n 8 && npm install -g npm && \
     ln -s /usr/bin/nodejs /usr/bin/node
 
 # install postgres 10
@@ -84,5 +85,5 @@ RUN chmod 700 /docker-entrypoint.sh
 HEALTHCHECK --interval=15s --timeout=60s --start-period=60s CMD curl -fk https://localhost/ || exit 1
 
 VOLUME "/data"
-EXPOSE 5432 22 80 443
+EXPOSE 5432 22 80
 CMD ["/docker-entrypoint.sh"]
