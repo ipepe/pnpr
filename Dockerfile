@@ -47,6 +47,11 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7 &&
 COPY src/nginx.conf /etc/nginx/
 COPY src/webapp.conf /etc/nginx/sites-enabled/default
 RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/default
+RUN mkdir -p /etc/nginx/certs/
+RUN openssl req -x509 -newkey rsa:4096 \
+        -keyout /etc/nginx/certs/default.key \
+        -out /etc/nginx/certs/default.crt \
+        -days 2048 -subj '/CN=localhost' -nodes
 
 # create webapp user
 RUN groupadd -g 1000 webapp && \
