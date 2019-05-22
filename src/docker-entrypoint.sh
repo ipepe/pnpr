@@ -2,12 +2,10 @@
 
 source /etc/environment
 
-mkdir -p $PGDATA /data/shared /data/current
+mkdir -p $PGDATA /data/shared
 chown -R webapp:webapp /data/shared
-chown -R webapp:webapp /data/current
 chown -R postgres "$PGDATA"
 ln -s /data/shared /home/webapp/webapp/shared
-ln -s /data/current /home/webapp/webapp/current
 rm -rf /var/lib/postgresql/10/main
 ln -s $PGDATA /var/lib/postgresql/10/main
 chown -R postgres "$PGDATA"
