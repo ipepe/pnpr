@@ -50,4 +50,5 @@ cron
 # takes very long, and might not be necessary to start
 chown -R webapp:webapp "/home/webapp" &
 
-tail -f /var/log/nginx/access.log
+echo "Application started"
+tail -f /dev/null
