@@ -4,7 +4,7 @@ MAINTAINER docker@ipepe.pl
 # setup args
 ARG RUBY_VERSION=2.5.5
 ARG RAILS_ENV=production
-ARG FRIENDLY_ERROR_PAGES=off
+ARG FRIENDLY_ERROR_PAGES=on
 ARG WITH_SUDO=false
 
 # setup envs
@@ -43,6 +43,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7 &&
     apt-get update && apt-get install -y apt-transport-https ca-certificates && \
     echo "deb https://oss-binaries.phusionpassenger.com/apt/passenger xenial main" > /etc/apt/sources.list.d/passenger.list && \
     apt-get update && apt-get install -y nginx-extras passenger
+RUN passenger-config build-native-support
 
 COPY src/nginx.conf /etc/nginx/
 COPY src/webapp.conf /etc/nginx/sites-enabled/default
