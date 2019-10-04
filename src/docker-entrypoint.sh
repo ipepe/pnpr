@@ -36,11 +36,17 @@ fi
 
 if [ ! -f /data/authorized_keys ]; then
     echo "Creating authorized_keys file"
-    touch /data/authorized_keys
-    rm -f /home/webapp/.ssh/authorized_keys
-    ln -s /data/authorized_keys /home/webapp/.ssh/authorized_keys
-    chown webapp:webapp /home/webapp/.ssh/*
+
+    if [ ! -f /home/webapp/.ssh/authorized_keys ]; then
+      touch /data/authorized_keys
+    else
+      mv /home/webapp/.ssh/authorized_keys /data/authorized_keys
+    fi
 fi
+
+rm -f /home/webapp/.ssh/authorized_keys
+ln -s /data/authorized_keys /home/webapp/.ssh/authorized_keys
+chown webapp:webapp /home/webapp/.ssh/*
 
 service ssh start
 service nginx start
