@@ -4,7 +4,7 @@ MAINTAINER docker@ipepe.pl
 # setup args
 ARG RUBY_VERSION=2.5.5
 ARG RAILS_ENV=production
-ARG FRIENDLY_ERROR_PAGES=on
+ARG FRIENDLY_ERROR_PAGES=off
 ARG WITH_SUDO=false
 
 # setup envs

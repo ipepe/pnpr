@@ -51,10 +51,10 @@ chown webapp:webapp /home/webapp/.ssh/*
 service ssh start
 service nginx start
 service redis-server start
-cron
+service cron start
 
 # takes very long, and might not be necessary to start
 chown -R webapp:webapp "/home/webapp" &
 
-echo "Application started"
+echo "Application started at `date`"
 tail -f /dev/null
