@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 MAINTAINER docker@ipepe.pl
 
 # setup args
-ARG RUBY_VERSION=2.5.5
+ARG RUBY_VERSION=2.5.7
 ARG RAILS_ENV=production
 ARG FRIENDLY_ERROR_PAGES=off
 ARG WITH_SUDO=false
