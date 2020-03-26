@@ -14,6 +14,7 @@ RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /etc/environment && \
     echo "FRIENDLY_ERROR_PAGES=${FRIENDLY_ERROR_PAGES}" >> /etc/environment && \
     echo "WITH_SUDO=${WITH_SUDO}" >> /etc/environment
 
+RUN cat /etc/environment
 # setup locale for postgres and other packages
 RUN apt-get update && apt-get install -y locales && \
     localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && \
@@ -25,6 +26,7 @@ RUN apt-get update && apt-get install -y \
     git make gcc g++ nodejs npm openssl libssl-dev curl libpq-dev \
     cron libreadline-dev libmagickwand-dev imagemagick wget nano htop \
     openssh-server apt-utils libjpeg-dev libpng-dev redis-server && \
+    npm install -g n && n 8 && npm install -g npm && \
     ln -s /usr/bin/nodejs /usr/bin/node
 
 # install postgres 10
@@ -41,9 +43,10 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7 &&
     apt-get update && apt-get install -y apt-transport-https ca-certificates && \
     echo "deb https://oss-binaries.phusionpassenger.com/apt/passenger xenial main" > /etc/apt/sources.list.d/passenger.list && \
     apt-get update && apt-get install -y nginx-extras passenger
+RUN passenger-config build-native-support
 
-COPY nginx.conf /etc/nginx/
-COPY webapp.conf /etc/nginx/sites-enabled/default
+COPY src/nginx.conf /etc/nginx/
+COPY src/webapp.conf /etc/nginx/sites-enabled/default
 RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/default
 
 # create webapp user
@@ -78,11 +81,10 @@ RUN mkdir -p /home/webapp/webapp /home/webapp/.ssh && \
     chown -R webapp:webapp "/home/webapp" && \
     apt-get clean && \
     rm -rf /tmp/*
-COPY ./docker-entrypoint.sh /
+
+COPY src/docker-entrypoint.sh /
 RUN chmod 700 /docker-entrypoint.sh
 
-HEALTHCHECK --interval=15s --timeout=60s --start-period=60s CMD curl -fk https://localhost/ || exit 1
-
 VOLUME "/data"
-EXPOSE 5432 22 80 443
+EXPOSE 5432 22 80
 CMD ["/docker-entrypoint.sh"]

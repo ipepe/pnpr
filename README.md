@@ -1,22 +1,12 @@
 # pnpr
 Run Your passenger nginx postgres ruby the simple way
 
-# how?
-1. Clone this repository onto Your VPS.
-```bash
-git clone https://github.com/ipepe/pnpr.git
-```
-2. Run scripts from 1 to 4 on Your VPS
-```bash
-bash 1-
-```
-pnpr foos start 
+## Cron/whenever is not working
 
-# how to update?
-```
-git pull
-```
+It's probably because bundler command is not found. To ensure that env path is included in cron add
+`env :PATH, ENV['PATH']` to `schedule.rb`
 
-```
-bash 3-install.pnpr.sh
-```
+## TODO:
+ * fix symbolic links
+ * dockerfile testing
+ * foreman as process keeper?
