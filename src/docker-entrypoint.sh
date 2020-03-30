@@ -2,12 +2,10 @@
 
 source /etc/environment
 
-mkdir -p $PGDATA /data/shared /data/current
+mkdir -p $PGDATA /data/shared
 chown -R webapp:webapp /data/shared
-chown -R webapp:webapp /data/current
 chown -R postgres "$PGDATA"
 ln -s /data/shared /home/webapp/webapp/shared
-ln -s /data/current /home/webapp/webapp/current
 rm -rf /var/lib/postgresql/10/main
 ln -s $PGDATA /var/lib/postgresql/10/main
 chown -R postgres "$PGDATA"
@@ -36,25 +34,27 @@ if [ ! -f "/home/webapp/webapp/shared/.env.$RAILS_ENV" ]; then
     chown webapp:webapp "/home/webapp/webapp/shared/.env.$RAILS_ENV"
 fi
 
-if [ ! -f /data/certs/webapp.crt ]; then
-    echo Generating OpenSSL certificate for localhost
-    mkdir -p /data/certs/
-    openssl req -x509 -newkey rsa:4096 -keyout /data/certs/webapp.key -out /data/certs/webapp.crt -days 2048 -subj '/CN=localhost' -nodes
-fi
-
 if [ ! -f /data/authorized_keys ]; then
     echo "Creating authorized_keys file"
-    touch /data/authorized_keys
-    ln -s /data/authorized_keys /home/webapp/.ssh/authorized_keys
-    chown webapp:webapp /home/webapp/.ssh/authorized_keys
+
+    if [ ! -f /home/webapp/.ssh/authorized_keys ]; then
+      touch /data/authorized_keys
+    else
+      mv /home/webapp/.ssh/authorized_keys /data/authorized_keys
+    fi
 fi
+
+rm -f /home/webapp/.ssh/authorized_keys
+ln -s /data/authorized_keys /home/webapp/.ssh/authorized_keys
+chown webapp:webapp /home/webapp/.ssh/*
 
 service ssh start
 service nginx start
 service redis-server start
-cron
+service cron start
 
 # takes very long, and might not be necessary to start
 chown -R webapp:webapp "/home/webapp" &
 
-tail -f /var/log/nginx/access.log
+echo "Application started at `date`"
+tail -f /dev/null
