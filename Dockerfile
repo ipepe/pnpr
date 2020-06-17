@@ -72,6 +72,7 @@ RUN git clone https://github.com/sstephenson/rbenv.git /home/webapp/.rbenv && \
     echo "gem: --no-rdoc --no-ri" > /home/webapp/.gemrc && \
     /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
     /home/webapp/.rbenv/bin/rbenv global ${RUBY_VERSION} && \
+    /home/webapp/.rbenv/shims/gem update --system && \
     /home/webapp/.rbenv/shims/gem install bundler && \
     /home/webapp/.rbenv/bin/rbenv rehash
 USER root

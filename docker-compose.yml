@@ -10,4 +10,6 @@ services:
     volumes:
       - ./data:/data
 
+# docker-compose down
+# docker-compose pull
 # docker-compose up

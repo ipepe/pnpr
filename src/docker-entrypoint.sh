@@ -49,12 +49,21 @@ rm -f /home/webapp/.ssh/authorized_keys
 ln -s /data/authorized_keys /home/webapp/.ssh/authorized_keys
 chown webapp:webapp /home/webapp/.ssh/*
 
+service redis-server start &
 service ssh start
 service nginx start
 service cron start
 
+if [ -f "$ON_START_BASH_SCRIPT_PATH" ]; then
+  echo "ON_START_BASH_SCRIPT_PATH detected as $ON_START_BASH_SCRIPT_PATH"
+  chown -R webapp:webapp "$ON_START_BASH_SCRIPT_PATH"
+  gosu webapp bash $ON_START_BASH_SCRIPT_PATH
+  echo "ON_START_BASH_SCRIPT_PATH exit code was $?"
+else
+  echo "ON_START_BASH_SCRIPT_PATH=$ON_START_BASH_SCRIPT_PATH file was not found"
+fi
+
 # takes very long, and might not be necessary to start
-service redis-server start &
 chown -R webapp:webapp "/home/webapp" &
 
 echo "Application started at `date`"

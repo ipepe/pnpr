@@ -2,6 +2,8 @@ version: '2'
 services:
   server:
     build: .
+    environment:
+      ON_START_BASH_SCRIPT_PATH: "/home/webapp/webapp/shared/on_docker_entrypoint.sh"
     ports:
      - "1022:22"
      - "1080:80"
