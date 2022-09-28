@@ -92,7 +92,7 @@ RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIE
 RUN rm /etc/nginx/sites-enabled/default && nginx -t
 
 ## install docker-entrypoint and cleanup whole image with final setups
-RUN chmod 700 /docker-entrypoint.sh && apt-get clean && rm -rf /tmp/*
+RUN chmod 700 /docker-entrypoint.sh && apt-get clean && rm -rf /tmp/* /var/tmp/*
 
 VOLUME "/home/webapp/webapp"
 VOLUME "/home/webapp/.ssh"
