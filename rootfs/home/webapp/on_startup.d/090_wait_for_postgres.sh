@@ -9,7 +9,7 @@ source /etc/environment
 echo "Waiting for postgres to start"
 WAIT_LIMIT=60
 WAIT_COUNT=0
-until psql -h $POSTGRES_HOST -U $POSTGRES_USER -c '\l' &> /dev/null
+until psql -h postgres_db -U webapp -c '\l' &> /dev/null
 do
     echo "Waiting for postgres to start"
     sleep 1
