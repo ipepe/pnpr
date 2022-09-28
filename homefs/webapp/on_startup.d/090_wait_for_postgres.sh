@@ -17,3 +17,4 @@ do
         exit 1
     fi
 done
+echo "Postgres is listening"
