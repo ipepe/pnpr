@@ -85,7 +85,7 @@ COPY --from=zappi/passenger-exporter /usr/local/bin/passenger-exporter /usr/loca
 # setup logrotate
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
 COPY rootfs /
-COPY --chown=webapp:webapp homefs/home/webapp/on_startup.d /home/webapp/
+COPY --chown=webapp:webapp homefs/webapp/on_startup.d /home/webapp/
 RUN (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab -
 
 # setup nginx
