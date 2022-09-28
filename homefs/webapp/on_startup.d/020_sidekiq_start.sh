@@ -3,8 +3,7 @@
 set -e
 
 echo "Currently running file: $0"
-echo "Load environment variables from /etc/environment"
-source /etc/environment
+source /home/webapp/.bashrc
 
 cd /home/webapp/webapp/current
 

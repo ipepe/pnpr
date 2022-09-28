@@ -85,11 +85,11 @@ COPY --from=zappi/passenger-exporter /usr/local/bin/passenger-exporter /usr/loca
 # setup logrotate
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
 COPY rootfs /
-COPY --chown=webapp:webapp homefs/webapp/on_startup.d /home/webapp/
+COPY --chown=webapp:webapp homefs/webapp/ /home/webapp
+RUN chmod g+x,o+x /home/webapp
 RUN (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab -
 
 # setup nginx
-RUN rm /etc/nginx/conf.d/mod-http-passenger.conf
 RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/default
 RUN nginx -t
 

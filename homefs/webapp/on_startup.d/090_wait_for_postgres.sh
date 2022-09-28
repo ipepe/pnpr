@@ -3,8 +3,6 @@
 set -e
 
 echo "Currently running file: $0"
-echo "Load environment variables from /etc/environment"
-source /etc/environment
 
 echo "Waiting for postgres to start"
 WAIT_LIMIT=60

@@ -9,6 +9,7 @@ service redis-server start
 /usr/local/bin/passenger-exporter &
 
 echo "Making sure that the user has the correct permissions"
+chmod g+x,o+x /home/webapp/webapp
 chown -R webapp:webapp "/home/webapp" &
 
 echo "Running all on_startup.d scripts"

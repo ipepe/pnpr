@@ -4,6 +4,9 @@ server {
 
     root /home/webapp/webapp/current/public;
     client_max_body_size 0;
+    passenger_user webapp;
+    passenger_group webapp;
+
 
     location / {
         passenger_enabled on;
