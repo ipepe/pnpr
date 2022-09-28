@@ -3,12 +3,12 @@ services:
   server:
     build: .
     environment:
-      ON_START_BASH_SCRIPT_PATH: "/home/webapp/webapp/shared/on_docker_entrypoint.sh"
+      ON_START_BASH_SCRIPT_PATH: "/home/webapp/webapp/current/sidekiq_start.sh"
     ports:
      - "1022:22"
      - "1080:80"
-     - "15432:5432"
     volumes:
-      - ./data:/data
+      - ./data/webapp:/home/webapp/webapp
+      - ./data/ssh:/home/webapp/.ssh
 
 # docker-compose -f docker-compose.dev.yml up --build

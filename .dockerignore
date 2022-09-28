@@ -1,4 +1,6 @@
 data/
+Dockerfile
+publish.sh
 docker-compose.*
 README.md
 LICENSE

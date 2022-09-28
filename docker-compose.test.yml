@@ -1,7 +1,0 @@
-version: '2'
-services:
-  sut:
-    build: .
-    command: pwd
-
-# docker-compose -f docker-compose.test.yml up --build
