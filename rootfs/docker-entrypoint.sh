@@ -12,7 +12,7 @@ echo "Making sure that the user has the correct permissions"
 chown -R webapp:webapp "/home/webapp" &
 
 echo "Running all on_startup.d scripts"
-for f in /home/webapp/webapp/on_startup.d/*; do
+for f in /home/webapp/on_startup.d/*; do
   echo "Running script: $f"
   chown -R webapp:webapp "$f"
   gosu webapp bash  "$f" || echo "Script failed: $f"
