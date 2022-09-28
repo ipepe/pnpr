@@ -3,16 +3,20 @@ services:
   server:
     build: .
     ports:
-     - "1022:22"
-     - "1080:80"
-    links:
-      - postgres_db
+      - "1022:22"
+      - "1080:80"
+      - "9149:9149"
     volumes:
       - ./data/webapp:/home/webapp/webapp
       - ./data/ssh:/home/webapp/.ssh
-
+    links:
+      - postgres_db
+    network_mode: bridge
   postgres_db:
+    network_mode: bridge
     image: postgres:14
+    environment:
+      POSTGRES_PASSWORD: Password1
     expose:
       - 5432
 
