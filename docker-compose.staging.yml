@@ -1,10 +1,10 @@
 version: '2'
 services:
   server:
-    build: .
+    image: ipepe/pnpr:v2-staging
     ports:
-     - "1022:22"
-     - "1080:80"
+      - "1022:22"
+      - "1080:80"
     links:
       - postgres_db
     volumes:
@@ -16,4 +16,4 @@ services:
     expose:
       - 5432
 
-# docker-compose -f docker-compose.dev.yml up --build
+# docker-compose -f docker-compose.staging.yml up --build
