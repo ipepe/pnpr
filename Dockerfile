@@ -35,7 +35,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
 
 # setup rbenv and install ruby
 USER webapp
-ARG RUBY_VERSION=2.3.8
+ARG RUBY_VERSION=2.6.10
 RUN git clone https://github.com/sstephenson/rbenv.git /home/webapp/.rbenv && \
     git clone https://github.com/sstephenson/ruby-build.git /home/webapp/.rbenv/plugins/ruby-build && \
     echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:\$PATH" >> /home/webapp/.bashrc && \
@@ -89,8 +89,9 @@ COPY --chown=webapp:webapp homefs/webapp/on_startup.d /home/webapp/
 RUN (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab -
 
 # setup nginx
-RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/webapp.conf
-RUN rm /etc/nginx/sites-enabled/default && nginx -t
+RUN rm /etc/nginx/conf.d/mod-http-passenger.conf
+RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/default
+RUN nginx -t
 
 ## install docker-entrypoint and cleanup whole image with final setups
 RUN chmod 700 /docker-entrypoint.sh && apt-get clean && rm -rf /tmp/* /var/tmp/*
