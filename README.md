@@ -8,6 +8,7 @@ It's probably because bundler command is not found. To ensure that env path is i
 
 ## Customize image
 
+### Other (second) ruby version
 ```Dockerfile
 FROM ipepe/pnpr:v2-ruby-2.7.5-staging
 
@@ -19,7 +20,13 @@ RUN rm /home/webapp/webapp/on_startup.d/090_wait_for_postgres.sh
 RUN echo "sleep 100" > /home/webapp/webapp/on_startup.d/015_sleep_100.sh
 ```
 
-## TODO:
- * fix symbolic links
- * dockerfile testing
- * foreman as process keeper?
+### Other node version
+
+```Dockerfile
+FROM ipepe/pnpr:v2-staging-ruby-2.7.5
+
+# Install nodejs
+RUN n 12.19.0 && npm install -g npm
+# addtionally install yarn
+RUN npm install -g yarn
+```
