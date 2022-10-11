@@ -35,7 +35,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
 
 # setup rbenv and install ruby
 USER webapp
-ARG RUBY_VERSION=2.6.10
+ARG RUBY_VERSION=2.7.5
 RUN git clone https://github.com/sstephenson/rbenv.git /home/webapp/.rbenv && \
     git clone https://github.com/sstephenson/ruby-build.git /home/webapp/.rbenv/plugins/ruby-build && \
     echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:\$PATH" >> /home/webapp/.bashrc && \
@@ -47,20 +47,16 @@ RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
     /home/webapp/.rbenv/shims/gem install bundler && \
     /home/webapp/.rbenv/bin/rbenv rehash
 
-# install nodenv
-ARG NODE_VERSION=10.24.1
-RUN git clone https://github.com/nodenv/nodenv.git /home/webapp/.nodenv && \
-    git clone https://github.com/nodenv/node-build.git /home/webapp/.nodenv/plugins/node-build && \
-    echo "export PATH=/home/webapp/.nodenv/bin:/home/webapp/.nodenv/shims:\$PATH" >> /home/webapp/.bashrc && \
-    echo "export NODENV_ROOT=/home/webapp/.nodenv" >> /home/webapp/.bashrc
-RUN /home/webapp/.nodenv/bin/nodenv install ${NODE_VERSION} && \
-    /home/webapp/.nodenv/bin/nodenv global ${NODE_VERSION} && \
-    /home/webapp/.nodenv/bin/nodenv rehash
-
 USER root
 
+# install node
+ARG NODE_VERSION=10.24.1
+RUN apt-get update && apt-get install -y nodejs npm && \
+    npm install -g n && n ${NODE_VERSION} && npm install -g npm && \
+    ln -s /usr/bin/nodejs /usr/bin/node
+
 ARG RAILS_ENV=staging
-ARG NODE_ENV=staging
+ARG NODE_ENV=production
 ARG FRIENDLY_ERROR_PAGES=on
 ARG WITH_SUDO=true
 
