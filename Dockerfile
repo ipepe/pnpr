@@ -52,8 +52,7 @@ USER root
 # install node
 ARG NODE_VERSION=10.24.1
 RUN apt-get update && apt-get install -y nodejs npm && \
-    npm install -g n && n ${NODE_VERSION} && npm install -g npm && \
-    ln -s /usr/bin/nodejs /usr/bin/node
+    npm install -g n && n ${NODE_VERSION} && npm install -g npm
 
 ARG RAILS_ENV=staging
 ARG NODE_ENV=production
