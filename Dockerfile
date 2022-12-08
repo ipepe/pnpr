@@ -57,22 +57,13 @@ RUN apt-get update && apt-get install -y nodejs npm && \
 ARG RAILS_ENV=staging
 ARG NODE_ENV=production
 ARG FRIENDLY_ERROR_PAGES=on
-ARG WITH_SUDO=true
 
 RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /etc/environment && \
     echo "NODE_VERSION=${NODE_VERSION}" >> /etc/environment && \
     echo "RAILS_ENV=${RAILS_ENV}" >> /etc/environment && \
     echo "NODE_ENV=${NODE_ENV}" >> /etc/environment && \
-    echo "FRIENDLY_ERROR_PAGES=${FRIENDLY_ERROR_PAGES}" >> /etc/environment && \
-    echo "WITH_SUDO=${WITH_SUDO}" >> /etc/environment
+    echo "FRIENDLY_ERROR_PAGES=${FRIENDLY_ERROR_PAGES}" >> /etc/environment
 
-## add webapp user to sudo
-RUN if [ $WITH_SUDO = "true" ] ; then \
-        apt-get update && \
-        apt-get install -y sudo && \
-        usermod -a -G sudo webapp && \
-        echo "webapp ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/00_webapp_sudo_rules \
-    ; fi
 
 # setup passenger-prometheus monitoring
 COPY --from=zappi/passenger-exporter /usr/local/bin/passenger-exporter /usr/local/bin/passenger-exporter
