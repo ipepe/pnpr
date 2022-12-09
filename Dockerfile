@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 ubuntu:22.04
+FROM --platform=linux/amd64 ubuntu:20.04
 MAINTAINER docker@ipepe.pl
 
 # setup envs
@@ -21,7 +21,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
     zlib1g-dev bzip2 software-properties-common \
     postgresql-client g++ openssl libssl-dev libpq-dev && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 561F9B9CAC40B2F7 && \
-    echo deb https://oss-binaries.phusionpassenger.com/apt/passenger jammy main > /etc/apt/sources.list.d/passenger.list && \
+    echo deb https://oss-binaries.phusionpassenger.com/apt/passenger focal main > /etc/apt/sources.list.d/passenger.list && \
     apt-get update && apt-get install -y libnginx-mod-http-passenger passenger && \
     rm /etc/nginx/conf.d/mod-http-passenger.conf && \
     /usr/bin/passenger-config build-native-support && \
@@ -50,9 +50,16 @@ RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
 USER root
 
 # install node
-ARG NODE_VERSION=10.24.1
-RUN apt-get update && apt-get install -y nodejs npm && \
-    npm install -g n && n ${NODE_VERSION} && npm install -g npm
+# https://github.com/nodesource/distributions/blob/master/README.md#using-debian-as-root-2
+RUN curl -fsSL https://deb.nodesource.com/setup_10.x | bash - &&\
+    apt-get install -y nodejs &&  \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    npm install -g npm
+
+# setup passenger-prometheus monitoring
+COPY --from=zappi/passenger-exporter /usr/local/bin/passenger-exporter /usr/local/bin/passenger-exporter
+COPY --chown=webapp:webapp homefs/webapp/ /home/webapp
+COPY rootfs /
 
 ARG RAILS_ENV=staging
 ARG NODE_ENV=production
@@ -64,25 +71,16 @@ RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /etc/environment && \
     echo "NODE_ENV=${NODE_ENV}" >> /etc/environment && \
     echo "FRIENDLY_ERROR_PAGES=${FRIENDLY_ERROR_PAGES}" >> /etc/environment
 
-
-# setup passenger-prometheus monitoring
-COPY --from=zappi/passenger-exporter /usr/local/bin/passenger-exporter /usr/local/bin/passenger-exporter
-
-# setup logrotate
-# https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
-COPY rootfs /
-COPY --chown=webapp:webapp homefs/webapp/ /home/webapp
-RUN chmod g+x,o+x /home/webapp
-RUN (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab -
-
 # setup nginx
 RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/default
 RUN nginx -t
 
-## install docker-entrypoint and cleanup whole image with final setups
-RUN chmod 700 /docker-entrypoint.sh && apt-get clean && rm -rf /tmp/* /var/tmp/*
+# setup logrotate
+# https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
+RUN chmod g+x,o+x /home/webapp && chmod +x /usr/local/bin/systemctl && \
+    (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab -
 
-VOLUME "/home/webapp/webapp"
 VOLUME "/home/webapp/.ssh"
 EXPOSE 22 80
-CMD ["/docker-entrypoint.sh"]
+# https://github.com/gdraheim/docker-systemctl-replacement
+CMD ["/usr/local/bin/systemctl"]
