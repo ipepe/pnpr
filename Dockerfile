@@ -64,10 +64,12 @@ COPY rootfs /
 # setup logrotate and systemctl
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
 # https://github.com/gdraheim/docker-systemctl-replacement
-RUN chmod g+x,o+x /home/webapp && chmod +x /usr/local/bin/systemctl && \
+RUN chmod g+x,o+x /home/webapp &&  \
+    chmod +x /usr/local/bin/systemctl && \
     (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab - && \
     /usr/local/bin/systemctl enable bootstrap.service && \
     /usr/local/bin/systemctl enable passenger-exporter.service && \
+    /usr/local/bin/systemctl enable zfix-webapp-permissions.service && \
     rm -rf /etc/init.d/* && \
     rm /lib/systemd/system/nginx.service && \
     rm /lib/systemd/system/cron.service && \
