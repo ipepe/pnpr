@@ -1,12 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
+echo "Started root_boot.sh at $(date)"
 echo "Load environment variables from /etc/environment"
 source /etc/environment
-
-echo  "Starting services"
-service ssh start
-service redis-server start
-/usr/local/bin/passenger-exporter &
 
 echo "Making sure that the user has the correct permissions"
 chmod g+x,o+x /home/webapp/webapp
@@ -19,9 +15,5 @@ for f in /home/webapp/on_startup.d/*; do
   gosu webapp bash  "$f" || echo "Script failed: $f"
 done
 
-echo "Starting nginx and cron"
-service cron start
-service nginx start
-
-echo "Application started at `date`"
-tail -f /var/log/nginx/error.log
+echo "Finished root_boot.sh at $(date)"
+exit 1

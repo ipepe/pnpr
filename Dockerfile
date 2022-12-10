@@ -9,8 +9,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
     localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && \
     echo 'LANG="en_US.UTF-8"' > /etc/default/locale && \
     echo 'LANGUAGE="en_US:en"' >> /etc/default/locale && \
-    apt-get install -y  \
-    wget nano htop git curl cron gosu \
+    apt-get install --no-install-recommends -y  \
+    wget nano htop git curl cron gosu psmisc \
     imagemagick \
     openssh-server redis \
     logrotate \
@@ -50,9 +50,10 @@ RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
 USER root
 
 # install node
+ARG NODE_MAJOR_VERSION=10
 # https://github.com/nodesource/distributions/blob/master/README.md#using-debian-as-root-2
-RUN curl -fsSL https://deb.nodesource.com/setup_10.x | bash - &&\
-    apt-get install -y nodejs &&  \
+RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR_VERSION}.x | bash - &&\
+    apt-get install --no-install-recommends -y nodejs &&  \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     npm install -g npm
 
@@ -78,9 +79,17 @@ RUN nginx -t
 # setup logrotate
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
 RUN chmod g+x,o+x /home/webapp && chmod +x /usr/local/bin/systemctl && \
-    (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab -
+    (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab - && \
+    /usr/local/bin/systemctl enable root-boot.service && \
+    #/usr/local/bin/systemctl enable sidekiq.service && \
+    /usr/local/bin/systemctl enable passenger-exporter.service
+
+# TODO: cron, nginx, sidekiq should wait for root-boot.service to finish
+RUN mv /etc/systemd/system/nginx.service /lib/systemd/system/nginx.service
+RUN mv /etc/systemd/system/cron.service /lib/systemd/system/cron.service
+
 
 VOLUME "/home/webapp/.ssh"
-EXPOSE 22 80
+EXPOSE 22 80 9149 8080 8081 8082
 # https://github.com/gdraheim/docker-systemctl-replacement
 CMD ["/usr/local/bin/systemctl"]
