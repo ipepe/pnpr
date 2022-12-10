@@ -24,8 +24,7 @@
 Description=sidekiq
 # start us only once the network and logging subsystems are available,
 # consider adding redis-server.service if Redis is local and systemd-managed.
-After=syslog.target network.target
-
+After=syslog.target network.target bootstrap.service
 # See these pages for lots of options:
 #
 #   https://www.freedesktop.org/software/systemd/man/systemd.service.html
@@ -76,4 +75,4 @@ StandardError=syslog
 SyslogIdentifier=sidekiq
 
 [Install]
-WantedBy=root-boot.service
+WantedBy=bootstrap.service

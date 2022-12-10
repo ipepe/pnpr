@@ -13,7 +13,7 @@
 [Unit]
 Description=A high performance web server and a reverse proxy server
 Documentation=man:nginx(8)
-
+After=bootstrap.service
 
 [Service]
 Type=forking
@@ -26,4 +26,5 @@ TimeoutStopSec=5
 KillMode=mixed
 
 [Install]
-WantedBy=root-boot.service
+WantedBy=multi-user.target
+

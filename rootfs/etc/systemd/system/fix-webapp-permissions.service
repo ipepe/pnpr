@@ -1,6 +1,6 @@
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/root_boot.sh
+ExecStart=/usr/local/bin/fix-webapp-permissions.sh
 
 [Install]
 WantedBy=multi-user.target

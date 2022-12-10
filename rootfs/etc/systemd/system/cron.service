@@ -1,7 +1,7 @@
 [Unit]
 Description=Regular background program processing daemon
 Documentation=man:cron(8)
-After=remote-fs.target nss-user-lookup.target
+After=remote-fs.target nss-user-lookup.target bootstrap.service
 
 [Service]
 EnvironmentFile=-/etc/default/cron
@@ -11,4 +11,4 @@ KillMode=process
 Restart=on-failure
 
 [Install]
-WantedBy=root-boot.service
+WantedBy=multi-user.target

@@ -32,7 +32,6 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
     echo "webapp:Password1" | chpasswd && \
     mkdir -p /home/webapp/.ssh
 
-
 # setup rbenv and install ruby
 USER webapp
 ARG RUBY_VERSION=2.7.5
@@ -62,9 +61,23 @@ COPY --from=zappi/passenger-exporter /usr/local/bin/passenger-exporter /usr/loca
 COPY --chown=webapp:webapp homefs/webapp/ /home/webapp
 COPY rootfs /
 
-ARG RAILS_ENV=staging
+# setup logrotate and systemctl
+# https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
+# https://github.com/gdraheim/docker-systemctl-replacement
+RUN chmod g+x,o+x /home/webapp && chmod +x /usr/local/bin/systemctl && \
+    (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab - && \
+    /usr/local/bin/systemctl enable bootstrap.service && \
+    /usr/local/bin/systemctl enable passenger-exporter.service && \
+    rm -rf /etc/init.d/* && \
+    rm /lib/systemd/system/nginx.service && \
+    rm /lib/systemd/system/cron.service && \
+    /usr/local/bin/systemctl reload nginx.service && \
+    /usr/local/bin/systemctl reload cron.service && \
+    /usr/local/bin/systemctl reload sidekiq.service
+
+ARG RAILS_ENV=production
 ARG NODE_ENV=production
-ARG FRIENDLY_ERROR_PAGES=on
+ARG FRIENDLY_ERROR_PAGES=off
 
 RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /etc/environment && \
     echo "NODE_VERSION=${NODE_VERSION}" >> /etc/environment && \
@@ -76,20 +89,6 @@ RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /etc/environment && \
 RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/default
 RUN nginx -t
 
-# setup logrotate
-# https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
-RUN chmod g+x,o+x /home/webapp && chmod +x /usr/local/bin/systemctl && \
-    (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab - && \
-    /usr/local/bin/systemctl enable root-boot.service && \
-    #/usr/local/bin/systemctl enable sidekiq.service && \
-    /usr/local/bin/systemctl enable passenger-exporter.service
-
-# TODO: cron, nginx, sidekiq should wait for root-boot.service to finish
-RUN mv /etc/systemd/system/nginx.service /lib/systemd/system/nginx.service
-RUN mv /etc/systemd/system/cron.service /lib/systemd/system/cron.service
-
-
 VOLUME "/home/webapp/.ssh"
 EXPOSE 22 80 9149 8080 8081 8082
-# https://github.com/gdraheim/docker-systemctl-replacement
 CMD ["/usr/local/bin/systemctl"]
