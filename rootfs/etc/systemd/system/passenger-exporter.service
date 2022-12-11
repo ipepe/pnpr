@@ -2,4 +2,4 @@
 ExecStart=/usr/local/bin/passenger-exporter
 
 [Install]
-WantedBy=multi-user.target nginx.service
+WantedBy=multi-user.target

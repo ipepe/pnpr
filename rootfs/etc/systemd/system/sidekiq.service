@@ -75,4 +75,4 @@ StandardError=syslog
 SyslogIdentifier=sidekiq
 
 [Install]
-WantedBy=bootstrap.service
+WantedBy=multi-user.target
