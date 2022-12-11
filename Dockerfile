@@ -12,6 +12,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
     apt-get install --no-install-recommends -y  \
     wget nano htop git curl cron gosu psmisc \
     imagemagick \
+    shared-mime-info \
     openssh-server redis \
     logrotate \
     nginx nginx-extras \
@@ -26,7 +27,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
     rm /etc/nginx/conf.d/mod-http-passenger.conf && \
     /usr/bin/passenger-config build-native-support && \
     /usr/bin/passenger-config validate-install && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    apt-get clean && rm -rf /tmp/* /var/tmp/* && \
     groupadd -g 1000 webapp && \
     useradd -m -s /bin/bash -g webapp -u 1000 webapp && \
     echo "webapp:Password1" | chpasswd && \
@@ -54,7 +55,7 @@ ARG NODE_MAJOR_VERSION=10
 # https://github.com/nodesource/distributions/blob/master/README.md#using-debian-as-root-2
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR_VERSION}.x | bash - &&\
     apt-get install --no-install-recommends -y nodejs &&  \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    apt-get clean && rm -rf  /tmp/* /var/tmp/* && \
     npm install -g npm
 
 # setup passenger-prometheus monitoring
