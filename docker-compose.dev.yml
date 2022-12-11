@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
       cache_from:
-        - ${DOCKER_REGISTRY}/ipepe/pnpr:v3-u2004-r2.7.5-n10-staging
+        - docker.io/ipepe/pnpr:v3-u2004-r2.7.5-n10-staging
       args:
         - NODE_ENV=staging
         - RAILS_ENV=staging

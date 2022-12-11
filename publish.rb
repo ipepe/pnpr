@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 RUBY_VERSIONS = %w[
-  2.3.8
+  2.3.1 2.3.8
   2.4.10
   2.5.9
   2.6.10
