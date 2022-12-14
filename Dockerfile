@@ -35,12 +35,12 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
 
 # setup rbenv and install ruby
 USER webapp
-ARG RUBY_VERSION=2.7.5
 RUN git clone https://github.com/sstephenson/rbenv.git /home/webapp/.rbenv && \
     git clone https://github.com/sstephenson/ruby-build.git /home/webapp/.rbenv/plugins/ruby-build && \
     echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:\$PATH" >> /home/webapp/.bashrc && \
     echo "export RBENV_ROOT=/home/webapp/.rbenv" >> /home/webapp/.bashrc && \
     echo "gem: --no-rdoc --no-ri" > /home/webapp/.gemrc
+ARG RUBY_VERSION=2.7.5
 RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
     /home/webapp/.rbenv/bin/rbenv global ${RUBY_VERSION} && \
     /home/webapp/.rbenv/shims/gem update --system && \
@@ -72,12 +72,12 @@ RUN chmod g+x,o+x /home/webapp &&  \
     /usr/local/bin/systemctl enable bootstrap.service && \
     /usr/local/bin/systemctl enable passenger-exporter.service && \
     /usr/local/bin/systemctl enable zfix-webapp-permissions.service && \
+    /usr/local/bin/systemctl enable sidekiq && \
     rm -rf /etc/init.d/* && \
     rm /lib/systemd/system/nginx.service && \
     rm /lib/systemd/system/cron.service && \
     /usr/local/bin/systemctl reload nginx.service && \
-    /usr/local/bin/systemctl reload cron.service && \
-    /usr/local/bin/systemctl reload sidekiq.service
+    /usr/local/bin/systemctl reload cron.service
 
 ARG RAILS_ENV=production
 ARG NODE_ENV=production
