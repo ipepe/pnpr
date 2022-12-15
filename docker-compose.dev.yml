@@ -7,11 +7,9 @@ services:
       cache_from:
         - docker.io/ipepe/pnpr:v3-u2004-r2.7.5-n10-staging
       args:
-        - NODE_ENV=staging
         - RAILS_ENV=staging
         - RUBY_VERSION=2.7.5
         - NODE_MAJOR_VERSION=10
-        - FRIENDLY_ERROR_PAGES=on
     environment:
       PGPASSWORD: Password1
     ports:
@@ -19,6 +17,7 @@ services:
       - "1080:80"
       - "9149:9149"
     volumes:
+      - /dev/null:/etc/systemd/system/sidekiq.service
       - ./data/webapp:/home/webapp/webapp
       - ./data/ssh:/home/webapp/.ssh
     links:

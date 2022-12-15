@@ -56,14 +56,14 @@ ARG NODE_MAJOR_VERSION=10
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR_VERSION}.x | bash - &&\
     apt-get install --no-install-recommends -y nodejs &&  \
     apt-get clean && rm -rf  /tmp/* /var/tmp/* && \
-    npm install -g npm
+    npm install -g npm@latest-6
 
 # setup passenger-prometheus monitoring
 COPY --from=zappi/passenger-exporter /usr/local/bin/passenger-exporter /usr/local/bin/passenger-exporter
 COPY --chown=webapp:webapp homefs/webapp/ /home/webapp
 COPY rootfs /
 
-# setup logrotate and systemctl
+# setup logrotate, systemctl, nginx, passenger
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
 # https://github.com/gdraheim/docker-systemctl-replacement
 RUN chmod g+x,o+x /home/webapp &&  \
@@ -73,6 +73,7 @@ RUN chmod g+x,o+x /home/webapp &&  \
     /usr/local/bin/systemctl enable passenger-exporter.service && \
     /usr/local/bin/systemctl enable zfix-webapp-permissions.service && \
     /usr/local/bin/systemctl enable sidekiq && \
+    touch /var/log/journal/sidekiq.service.unit.log && \
     rm -rf /etc/init.d/* && \
     rm /lib/systemd/system/nginx.service && \
     rm /lib/systemd/system/cron.service && \
@@ -80,18 +81,15 @@ RUN chmod g+x,o+x /home/webapp &&  \
     /usr/local/bin/systemctl reload cron.service
 
 ARG RAILS_ENV=production
-ARG NODE_ENV=production
-ARG FRIENDLY_ERROR_PAGES=off
-
-RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /etc/environment && \
-    echo "NODE_VERSION=${NODE_VERSION}" >> /etc/environment && \
+RUN if [ "$RAILS_ENV" = "production" ] ; then \
+      sed -e "s/\${FRIENDLY_ERROR_PAGES}/off/" -i /etc/nginx/sites-enabled/default \
+    ; else \
+      sed -e "s/\${FRIENDLY_ERROR_PAGES}/on/" -i /etc/nginx/sites-enabled/default \
+    ; fi
+RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -i /etc/nginx/sites-enabled/default && \
+    nginx -t && \
     echo "RAILS_ENV=${RAILS_ENV}" >> /etc/environment && \
-    echo "NODE_ENV=${NODE_ENV}" >> /etc/environment && \
-    echo "FRIENDLY_ERROR_PAGES=${FRIENDLY_ERROR_PAGES}" >> /etc/environment
-
-# setup nginx
-RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/default
-RUN nginx -t
+    echo "NODE_ENV=${RAILS_ENV}" >> /etc/environment
 
 VOLUME "/home/webapp/.ssh"
 EXPOSE 22 80 9149 8080 8081 8082

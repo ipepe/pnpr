@@ -20,20 +20,12 @@ NODE_VERSIONS.each do |node_version|
     ENV_LEVELS.each do |env_level|
       image_tag = "v3-u2004-r#{ruby_version}-n#{node_version}-#{env_level}"
       image_name = "ipepe/pnpr:#{image_tag}"
-      friendly_error_pages =
-        if env_level == 'production'
-          'off'
-        else
-          'on'
-        end
       puts "Building #{image_name}"
       `docker build . --tag "#{image_name}" \
             --cache-from docker.io/#{image_name} \
             --build-arg RUBY_VERSION=#{ruby_version} \
             --build-arg NODE_MAJOR_VERSION=#{node_version} \
-            --build-arg RAILS_ENV=#{env_level} \
-            --build-arg NODE_ENV=#{env_level} \
-            --build-arg FRIENDLY_ERROR_PAGES=#{friendly_error_pages}`
+            --build-arg RAILS_ENV=#{env_level}`
       puts "Pushing #{image_name}"
       `docker push "#{image_name}"`
     end
