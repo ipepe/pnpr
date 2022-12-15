@@ -92,5 +92,6 @@ RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -i /etc/nginx/sites-enabled/default &
     echo "NODE_ENV=${RAILS_ENV}" >> /etc/environment
 
 VOLUME "/home/webapp/.ssh"
+VOLUME "/home/webapp/webapp"
 EXPOSE 22 80 9149 8080 8081 8082
 CMD ["/usr/local/bin/systemctl"]
