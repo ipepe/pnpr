@@ -1,2 +1,2 @@
-data/
-docker-compose.yml
+docker/data/
+docker/docker-compose.yml

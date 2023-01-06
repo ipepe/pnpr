@@ -17,6 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image for ruby-${{ matrix.ruby-version }} and node-${{ matrix.node-version }}
-      run: docker build . --file Dockerfile --tag ipepe/pnpr:v3-u2004-r${{ matrix.ruby-version }}-n${{ matrix.node-version }}-${{ matrix.env-level }} --build-arg RUBY_VERSION=#{ruby_version} --build-arg NODE_MAJOR_VERSION=${{ matrix.node-version }} --build-arg RAILS_ENV=${{ matrix.env-level }}
+      run: docker build docker --file docker/Dockerfile --tag ipepe/pnpr:v3-u2004-r${{ matrix.ruby-version }}-n${{ matrix.node-version }}-${{ matrix.env-level }} --build-arg RUBY_VERSION=#{ruby_version} --build-arg NODE_MAJOR_VERSION=${{ matrix.node-version }} --build-arg RAILS_ENV=${{ matrix.env-level }}
     - name: Publish the Docker image
       run: docker push ipepe/pnpr:v3-u2004-r${{ matrix.ruby-version }}-n${{ matrix.node-version }}-${{ matrix.env-level }}
