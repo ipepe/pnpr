@@ -33,6 +33,15 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
     echo "webapp:Password1" | chpasswd && \
     mkdir -p /home/webapp/.ssh
 
+# install postgres 15
+RUN curl -o /usr/local/bin/gosu -SL 'https://github.com/tianon/gosu/releases/download/1.1/gosu' && \
+    chmod 700 /usr/local/bin/gosu && \
+	echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" >> /etc/apt/sources.list.d/pgdg.list && \
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
+    apt-get update && apt-get install -y postgresql-15 postgresql-contrib-15 postgresql-client-15 && \
+    mkdir -p /var/run/postgresql && chown -R postgres /var/run/postgresql && \
+    rm -rf /var/lib/postgresql/15/main
+
 # setup rbenv and install ruby
 USER webapp
 ARG RUBY_VERSION=2.7.5
