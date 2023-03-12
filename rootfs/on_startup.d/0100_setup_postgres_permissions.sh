@@ -3,16 +3,8 @@
 set -e
 
 echo "Currently running file: $0"
-
-mkdir -p $PGDATA /data/shared
-chown -R webapp:webapp /data/shared
+mkdir -p $PGDATA
 chown -R postgres "$PGDATA"
-rm -rf /home/webapp/webapp/shared
-ln -s /data/shared /home/webapp/webapp/shared
-rm -rf /var/lib/postgresql/10/main
-ln -s $PGDATA /var/lib/postgresql/10/main
-chown -R postgres "$PGDATA"
-chown -R postgres /var/lib/postgresql/10/main
 
 if [ ! -f $PGDATA/postgresql.conf ]; then #we can assume that we need a database setup
     gosu postgres /usr/lib/postgresql/10/bin/initdb --encoding=UTF-8 --local=en_US.UTF-8 -D $PGDATA

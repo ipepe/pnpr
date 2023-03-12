@@ -78,6 +78,7 @@ RUN chmod g+x,o+x /home/webapp &&  \
     (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab - && \
     /usr/local/bin/systemctl enable bootstrap.service && \
     /usr/local/bin/systemctl enable passenger-exporter.service && \
+    /usr/local/bin/systemctl enable postgresql.service && \
     /usr/local/bin/systemctl enable zfix-webapp-permissions.service && \
     rm -rf /etc/init.d/* && \
     rm /lib/systemd/system/nginx.service && \
