@@ -41,10 +41,8 @@ RUN git clone https://github.com/sstephenson/rbenv.git /home/webapp/.rbenv && \
     echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:\$PATH" >> /home/webapp/.bashrc && \
     echo "export RBENV_ROOT=/home/webapp/.rbenv" >> /home/webapp/.bashrc && \
     echo "gem: --no-rdoc --no-ri" > /home/webapp/.gemrc
-RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
-    /home/webapp/.rbenv/bin/rbenv global ${RUBY_VERSION} && \
-    /home/webapp/.rbenv/shims/gem update --system && \
-    /home/webapp/.rbenv/shims/gem install bundler && \
+RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION}
+RUN /home/webapp/.rbenv/bin/rbenv global ${RUBY_VERSION} && \
     /home/webapp/.rbenv/shims/gem install bundler:1.17.3 && \
     /home/webapp/.rbenv/bin/rbenv rehash
 
@@ -59,7 +57,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR_VERSION}.x | bash -
     npm install -g npm
 
 # setup passenger-prometheus monitoring
-COPY --from=zappi/passenger-exporter /usr/local/bin/passenger-exporter /usr/local/bin/passenger-exporter
+COPY --from=zappi/passenger-exporter:1.0.0 /opt/app/bin/passenger-exporter /usr/local/bin/passenger-exporter
 COPY --chown=webapp:webapp homefs/webapp/ /home/webapp
 COPY rootfs /
 
