@@ -29,5 +29,6 @@ services:
       - 5432
     volumes:
       - ./data/db:/var/lib/postgresql/data
+      - ./data/dbdumps:/dbdumps
 
 # docker-compose -f docker-compose.staging.yml up --build
