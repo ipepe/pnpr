@@ -83,6 +83,7 @@ RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIE
     sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -i /etc/init.d/sidekiq
 RUN nginx -t
 
+HEALTHCHECK --interval=5s --timeout=3s --start-period=30s --retries=3 CMD curl -f http://localhost/healtcheck || exit 1
 VOLUME "/home/webapp/.ssh"
 EXPOSE 22 80 9149 8080 8081 8082
 CMD ["/docker-entrypoint.rb"]
