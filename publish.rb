@@ -1,30 +1,29 @@
 #!/usr/bin/env ruby
-# frozen_string_literal: true
-
-RUBY_VERSIONS = %w[
-  2.3.1 2.3.8
-  2.4.10
-  2.5.9
-  2.6.10
-  2.7.2 2.7.5 2.7.6 2.7.7
-  3.0.4 3.0.5
-  3.1.2 3.1.3
+RUBY_VERSIONS = [
+  "2.3.1", "2.3.8",
+  "2.4.10",
+  "2.5.9",
+  "2.6.10",
+  "2.7.2", "2.7.5", "2.7.6", "2.7.7",
+  "3.0.4", "3.0.5",
+  "3.1.2", "3.1.3",
+  "3.2.0"
 ].freeze
 
-NODE_VERSIONS = %w[10 12 14 16 18].freeze
+NODE_VERSIONS = ["10", "12", "14", "16", "18"].freeze
 
-ENV_LEVELS = %w[production staging development].freeze
+ENV_LEVELS = ["production", "staging", "development"].freeze
 
 NODE_VERSIONS.each do |node_version|
   RUBY_VERSIONS.reverse.each do |ruby_version|
     ENV_LEVELS.each do |env_level|
-      image_tag = "v3-u2004-r#{ruby_version}-n#{node_version}-#{env_level}"
+      image_tag = "v3.1-u2004-r#{ruby_version}-n#{node_version}-#{env_level}"
       image_name = "ipepe/pnpr:#{image_tag}"
       friendly_error_pages =
-        if env_level == 'production'
-          'off'
+        if env_level == "production"
+          "off"
         else
-          'on'
+          "on"
         end
       puts "Building #{image_name}"
       `docker build . --tag "#{image_name}" \
