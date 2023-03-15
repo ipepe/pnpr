@@ -61,21 +61,11 @@ COPY --from=zappi/passenger-exporter:1.0.0 /opt/app/bin/passenger-exporter /usr/
 COPY --chown=webapp:webapp homefs/webapp/ /home/webapp
 COPY rootfs /
 
-# setup logrotate and systemctl
+# setup logrotate
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
-# https://github.com/gdraheim/docker-systemctl-replacement
 RUN chmod g+x,o+x /home/webapp &&  \
     chmod +x /docker-entrypoint.rb && \
-    (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab - && \
-    /usr/local/bin/systemctl enable bootstrap.service && \
-    /usr/local/bin/systemctl enable passenger-exporter.service && \
-    /usr/local/bin/systemctl enable zfix-webapp-permissions.service && \
-    rm -rf /etc/init.d/* && \
-    rm /lib/systemd/system/nginx.service && \
-    rm /lib/systemd/system/cron.service && \
-    /usr/local/bin/systemctl reload nginx.service && \
-    /usr/local/bin/systemctl reload cron.service && \
-    /usr/local/bin/systemctl reload sidekiq.service
+    (crontab -l; echo "33 3 * * * /usr/sbin/logrotate") | crontab -
 
 ARG RAILS_ENV=production
 ARG NODE_ENV=production

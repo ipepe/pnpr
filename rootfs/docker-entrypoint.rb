@@ -1,55 +1,33 @@
 #!/usr/bin/env ruby
 
+# this script has 3 purposes:
+# 1. prepare container (file permissions, etc) and start all relevant services in proper order
+# 2. when receiving interrupt, forward this interrupt to all child processes
+# 3. reap all zombie/defunct processes
+
+# ==== PREPARE CONTAINER AND START SERVICES ====
 system("source /etc/environment")
 # start these services in the background: redis-server, ssh, nginx, cron
 system("service ssh start")
-system("service redis-server start")
+# system("service redis-server start")
 system("service nginx start")
-system("service cron start")
+# system("service cron start")
 
-sleep
-
-txt = <<~RUBY
-  # Define the PID 1 process to run
-  pid_1_cmd = "/usr/bin/my_custom_process"
-
-  # Start the PID 1 process
-  pid_1_pid = Process.spawn(pid_1_cmd)
-
-  # Set up the signal handlers
-  ["INT", "TERM"].each do |signal|
-    Signal.trap(signal) do
-      Process.kill(signal, pid_1_pid) if pid_1_pid
-      exit
-    end
+# ==== RECEIVE AND FORWARD INTERRUPT SIGNALS TO CHILD PROCESSES ====
+["INT", "TERM"].each do |signal|
+  Signal.trap(signal) do
+    puts "Received #{signal}"
+    exit(2)
   end
+end
 
-
-
-  # Wait for the PID 1 process to exit
-  Process.wait(pid_1_pid)
-
-  # Exit with the PID 1 process exit code
-  exit $CHILD_STATUS.exitstatus
-
-  system("service ssh start")
-
-  # Then, start nginx
-  system("nginx")
-
-  # Perform a rudimentary health check by attempting to connect to nginx
-  require "net/http"
-  require "uri"
-
-  uri = URI.parse("http://localhost")
-  response = Net::HTTP.get_response(uri)
-
-  if response.code == "200"
-    puts "nginx is up and running!"
-  else
-    puts "nginx is not running!"
+# ==== REAP ALL ZOMBIE AND DEFUNCT SERVICES ====
+loop do
+  begin
+    pid, status = Process.wait2
+    warn "Process: #{pid}, exited with status #{status}"
+  rescue Errno::ECHILD => e
+    warn e.message
+    exit(1)
   end
-
-  # Sleep indefinitely to keep the container alive
-  sleep
-RUBY
+end
