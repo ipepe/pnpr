@@ -5,29 +5,33 @@
 # 2. when receiving interrupt, forward this interrupt to all child processes
 # 3. reap all zombie/defunct processes
 
+def logged_system_call(command)
+  puts "Executing: #{command}"
+  system(command)
+end
+
 # ==== PREPARE CONTAINER AND START SERVICES ====
-system("source /etc/environment")
-# start these services in the background: redis-server, ssh, nginx, cron
-system("service ssh start")
-# system("service redis-server start")
-system("service nginx start")
-# system("service cron start")
+SERVICE_NAMES = [:ssh, :"redis-server", :cron, :nginx, :"passenger-exporter", :sidekiq].freeze
+
+logged_system_call("bash /bootstrap.sh")
+logged_system_call('chown -R webapp:webapp "/home/webapp"')
+
+SERVICE_NAMES.each do |service_name|
+  logged_system_call("service #{service_name} start")
+end
 
 # ==== RECEIVE AND FORWARD INTERRUPT SIGNALS TO CHILD PROCESSES ====
-["INT", "TERM"].each do |signal|
+[:INT, :QUIT, :TERM].each do |signal|
   Signal.trap(signal) do
     puts "Received #{signal}"
-    exit(2)
+    SERVICE_NAMES.reverse.each do |service_name|
+      puts "Stopping #{service_name}"
+      logged_system_call("service #{service_name} stop")
+    end
+    exit(Signal.list[signal.to_s])
   end
 end
 
 # ==== REAP ALL ZOMBIE AND DEFUNCT SERVICES ====
-loop do
-  begin
-    pid, status = Process.wait2
-    warn "Process: #{pid}, exited with status #{status}"
-  rescue Errno::ECHILD => e
-    warn e.message
-    exit(1)
-  end
-end
+Process.waitall
+exit(1)
