@@ -53,6 +53,7 @@ case "$1" in
 
 	if start-stop-daemon --start --quiet --oknodo --umask 007 --pidfile $PIDFILE --chuid redis:redis --exec $DAEMON -- $DAEMON_ARGS
 	then
+	  killall -q -9 redis-server
 		echo "$NAME."
 	else
 		echo "failed"
