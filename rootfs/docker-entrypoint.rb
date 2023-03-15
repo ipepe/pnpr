@@ -20,6 +20,8 @@ SERVICE_NAMES.each do |service_name|
   logged_system_call("service #{service_name} start")
 end
 
+puts "All services started. Application is ready. Waiting for interrupt..."
+
 # ==== RECEIVE AND FORWARD INTERRUPT SIGNALS TO CHILD PROCESSES ====
 [:INT, :QUIT, :TERM].each do |signal|
   Signal.trap(signal) do
