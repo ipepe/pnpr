@@ -1,26 +1,32 @@
 version: '3.2'
 services:
   server:
-    image: ipepe/pnpr:v3-u2004-r2.7.5-n10-staging
+    image: ipepe/pnpr:v3-u2004-r2.3.1-n10-staging
+    restart: always
+    network_mode: bridge
+    healthcheck:
+      disable: true
     environment:
       PGPASSWORD: Password1
     links:
       - postgres_db
     ports:
-      - "1022:22"
-      - "1080:80"
-    network_mode: bridge
+      - "3322:22"
+      - "3080:80"
     volumes:
       - ./data/webapp:/home/webapp/webapp
       - ./data/ssh:/home/webapp/.ssh
+    expose:
+      - 80
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.port=80'
-      - 'traefik.frontend.rule=Host:staging.example.org'
+      - "traefik.enable=true"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=Host:staging.example.org"
 
   postgres_db:
     network_mode: bridge
-    image: postgres:15
+    image: postgres:10
+    restart: always
     environment:
       POSTGRES_DB: webapp
       POSTGRES_USER: webapp
