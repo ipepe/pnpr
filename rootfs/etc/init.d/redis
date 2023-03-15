@@ -13,13 +13,13 @@
 
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/bin/redis
+DAEMON=/usr/bin/redis-server
 DAEMON_ARGS=/etc/redis/redis.conf
 NAME=redis
 DESC=redis
 
 RUNDIR=/var/run/redis
-PIDFILE=$RUNDIR/redis.pid
+PIDFILE=/var/run/redis.pid
 
 test -x $DAEMON || exit 0
 

@@ -14,7 +14,7 @@ end
 SERVICE_NAMES = [:ssh, :redis, :cron, :nginx, :"passenger-exporter", :sidekiq].freeze
 
 logged_system_call("bash /bootstrap.sh")
-logged_system_call('chown -R webapp:webapp "/home/webapp"')
+logged_system_call('chown -R webapp:webapp "/home/webapp" &')
 
 SERVICE_NAMES.each do |service_name|
   logged_system_call("service #{service_name} start")
