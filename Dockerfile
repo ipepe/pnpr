@@ -65,7 +65,7 @@ COPY rootfs /
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
 # https://github.com/gdraheim/docker-systemctl-replacement
 RUN chmod g+x,o+x /home/webapp &&  \
-    chmod +x /usr/local/bin/systemctl && \
+    chmod +x /docker-entrypoint.rb && \
     (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab - && \
     /usr/local/bin/systemctl enable bootstrap.service && \
     /usr/local/bin/systemctl enable passenger-exporter.service && \
@@ -93,4 +93,4 @@ RUN nginx -t
 
 VOLUME "/home/webapp/.ssh"
 EXPOSE 22 80 9149 8080 8081 8082
-CMD ["/usr/local/bin/systemctl"]
+CMD ["/docker-entrypoint.rb"]
