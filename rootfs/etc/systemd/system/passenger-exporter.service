@@ -1,5 +1,0 @@
-[Service]
-ExecStart=/usr/local/bin/passenger-exporter
-
-[Install]
-WantedBy=multi-user.target

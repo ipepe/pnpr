@@ -1,6 +1,0 @@
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/bootstrap.sh
-
-[Install]
-WantedBy=multi-user.target
