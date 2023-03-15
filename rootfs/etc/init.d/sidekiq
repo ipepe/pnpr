@@ -13,7 +13,7 @@
 
 # Customize this based on your bundler location, app directory, etc.
 APP_ROOT="/home/webapp/webapp/current"
-PIDFILE="$APP_ROOT/tmp/pids/sidekiq.pid"
+PIDFILE="/home/webapp/webapp/shared/sidekiq.pid"
 LOGFILE="$APP_ROOT/log/sidekiq.log"
 RAILS_ENV=${RAILS_ENV}
 SIDEKIQ_OPTIONS="-e $RAILS_ENV -C $APP_ROOT/config/sidekiq.yml"
@@ -24,13 +24,13 @@ set -e
 
 start() {
   cd $APP_ROOT
-  $SIDEKIQ_BIN $SIDEKIQ_OPTIONS 2>>$LOGFILE >>$LOGFILE &
+  su webapp -c "$SIDEKIQ_BIN $SIDEKIQ_OPTIONS 2>>$LOGFILE >>$LOGFILE &"
   echo $! > $PIDFILE
 }
 
 stop() {
   cd $APP_ROOT
-  kill -s TERM `cat $PIDFILE`
+  su webapp -c "kill -s TERM `cat $PIDFILE`"
   rm -f $PIDFILE
 }
 
