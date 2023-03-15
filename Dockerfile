@@ -79,7 +79,8 @@ RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /etc/environment && \
     echo "FRIENDLY_ERROR_PAGES=${FRIENDLY_ERROR_PAGES}" >> /etc/environment
 
 # setup nginx
-RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/default
+RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/default && \
+    sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -i /etc/init.d/sidekiq
 RUN nginx -t
 
 VOLUME "/home/webapp/.ssh"
