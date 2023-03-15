@@ -35,16 +35,14 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
 
 # setup rbenv and install ruby
 USER webapp
+ARG RUBY_VERSION=2.7.5
 RUN git clone https://github.com/sstephenson/rbenv.git /home/webapp/.rbenv && \
     git clone https://github.com/sstephenson/ruby-build.git /home/webapp/.rbenv/plugins/ruby-build && \
     echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:\$PATH" >> /home/webapp/.bashrc && \
     echo "export RBENV_ROOT=/home/webapp/.rbenv" >> /home/webapp/.bashrc && \
     echo "gem: --no-rdoc --no-ri" > /home/webapp/.gemrc
-ARG RUBY_VERSION=2.7.5
-RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
-    /home/webapp/.rbenv/bin/rbenv global ${RUBY_VERSION} && \
-    /home/webapp/.rbenv/shims/gem update --system && \
-    /home/webapp/.rbenv/shims/gem install bundler && \
+RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION}
+RUN /home/webapp/.rbenv/bin/rbenv global ${RUBY_VERSION} && \
     /home/webapp/.rbenv/shims/gem install bundler:1.17.3 && \
     /home/webapp/.rbenv/bin/rbenv rehash
 
@@ -56,42 +54,35 @@ ARG NODE_MAJOR_VERSION=10
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR_VERSION}.x | bash - &&\
     apt-get install --no-install-recommends -y nodejs &&  \
     apt-get clean && rm -rf  /tmp/* /var/tmp/* && \
-    npm install -g npm@latest-6
+    npm install -g npm
 
 # setup passenger-prometheus monitoring
-COPY --from=zappi/passenger-exporter /usr/local/bin/passenger-exporter /usr/local/bin/passenger-exporter
+COPY --from=zappi/passenger-exporter:1.0.0 /opt/app/bin/passenger-exporter /usr/local/bin/passenger-exporter
 COPY --chown=webapp:webapp homefs/webapp/ /home/webapp
 COPY rootfs /
 
-# setup logrotate, systemctl, nginx, passenger
+# setup logrotate
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
-# https://github.com/gdraheim/docker-systemctl-replacement
 RUN chmod g+x,o+x /home/webapp &&  \
-    chmod +x /usr/local/bin/systemctl && \
-    (crontab -l; echo "0 * * * * /usr/sbin/logrotate") | crontab - && \
-    /usr/local/bin/systemctl enable bootstrap.service && \
-    /usr/local/bin/systemctl enable passenger-exporter.service && \
-    /usr/local/bin/systemctl enable zfix-webapp-permissions.service && \
-    /usr/local/bin/systemctl enable sidekiq && \
-    touch /var/log/journal/sidekiq.service.unit.log && \
-    rm -rf /etc/init.d/* && \
-    rm /lib/systemd/system/nginx.service && \
-    rm /lib/systemd/system/cron.service && \
-    /usr/local/bin/systemctl reload nginx.service && \
-    /usr/local/bin/systemctl reload cron.service
+    chmod +x /docker-entrypoint.rb && \
+    rm /etc/init.d/dbus /etc/init.d/hwclock.sh /etc/init.d/procps && \
+    (crontab -l; echo "33 3 * * * /usr/sbin/logrotate") | crontab -
 
 ARG RAILS_ENV=production
-RUN if [ "$RAILS_ENV" = "production" ] ; then \
-      sed -e "s/\${FRIENDLY_ERROR_PAGES}/off/" -i /etc/nginx/sites-enabled/default \
-    ; else \
-      sed -e "s/\${FRIENDLY_ERROR_PAGES}/on/" -i /etc/nginx/sites-enabled/default \
-    ; fi
-RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -i /etc/nginx/sites-enabled/default && \
-    nginx -t && \
+ARG NODE_ENV=production
+ARG FRIENDLY_ERROR_PAGES=off
+
+RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /etc/environment && \
+    echo "NODE_VERSION=${NODE_VERSION}" >> /etc/environment && \
     echo "RAILS_ENV=${RAILS_ENV}" >> /etc/environment && \
-    echo "NODE_ENV=${RAILS_ENV}" >> /etc/environment
+    echo "NODE_ENV=${NODE_ENV}" >> /etc/environment && \
+    echo "FRIENDLY_ERROR_PAGES=${FRIENDLY_ERROR_PAGES}" >> /etc/environment
+
+# setup nginx
+RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/default && \
+    sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -i /etc/init.d/sidekiq
+RUN nginx -t
 
 VOLUME "/home/webapp/.ssh"
-VOLUME "/home/webapp/webapp"
 EXPOSE 22 80 9149 8080 8081 8082
-CMD ["/usr/local/bin/systemctl"]
+CMD ["/docker-entrypoint.rb"]

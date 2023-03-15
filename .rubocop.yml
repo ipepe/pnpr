@@ -1,0 +1,72 @@
+AllCops:
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+  NewCops: enable
+  TargetRubyVersion: 2.3
+  Include:
+    - '**/*.rb'
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+Layout/LineLength:
+  Max: 100
+Style/NumericPredicate:
+  EnforcedStyle: comparison
+Style/ZeroLengthPredicate:
+  Enabled: false
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: double_quotes
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: never
+Style/Documentation:
+  Enabled: false
+Metrics/BlockLength:
+  Exclude:
+    - db/seeds.rb
+    - app/admin/**/*.rb
+    - spec/**/*_spec.rb
+    - config/routes.rb
+    - config/deploy/*.rb
+    - app/admin/**/*.rb
+    - lib/tasks/**/*.rake
+Metrics/AbcSize:
+  Exclude:
+    - db/migrate/*.rb
+  Max: 25
+Metrics/CyclomaticComplexity:
+  Max: 15
+Metrics/ParameterLists:
+  Max: 6
+Lint/RaiseException:
+  Enabled: true
+Lint/StructNewOverride:
+  Enabled: true
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true
+Style/MultilineBlockChain:
+  Enabled: false
+Style/NegatedIf:
+  EnforcedStyle: postfix
+Layout/DotPosition:
+  EnforcedStyle: trailing
+  Enabled: true
+Metrics/MethodLength:
+  Max: 20
+  Exclude:
+    - 'db/**/*.rb'
+Style/DoubleNegation:
+  Enabled: false
+Style/WordArray:
+  EnforcedStyle: brackets
+Style/SymbolArray:
+  EnforcedStyle: brackets
+Style/CommentedKeyword:
+  Enabled: false
+Naming/PredicateName:
+  Exclude:
+    - 'app/serializers/**/*.rb'

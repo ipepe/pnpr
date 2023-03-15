@@ -1,0 +1,98 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          passenger-exporter
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Passenger Exporter
+# Description:       Starts the Passenger Exporter service
+### END INIT INFO
+
+# Set the working directory for the script
+cd /
+
+# Define the command to start the service
+DAEMON=/usr/local/bin/passenger-exporter
+
+# Define the arguments for the command, if any
+DAEMON_ARGS=""
+
+# Define the name of the service
+NAME=passenger-exporter
+
+# Define the user and group that the service should run as
+USER=root
+GROUP=root
+
+# Make sure the daemon is executable
+test -x $DAEMON || exit 0
+
+# Include functions for managing the service
+. /lib/lsb/init-functions
+
+# Define the start function
+do_start() {
+    start-stop-daemon --start --quiet --chuid $USER:$GROUP --background --make-pidfile --pidfile /var/run/$NAME.pid --exec $DAEMON -- $DAEMON_ARGS
+}
+
+# Define the stop function
+do_stop() {
+    start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile /var/run/$NAME.pid --exec $DAEMON
+    RETVAL="$?"
+    [ "$RETVAL" = 2 ] && return 2
+    start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
+    [ "$?" = 2 ] && return 2
+    rm -f /var/run/$NAME.pid
+    return "$RETVAL"
+}
+
+# Define the restart function
+do_restart() {
+    do_stop
+    sleep 1
+    do_start
+}
+
+# Define the status function
+do_status() {
+    status_of_proc -p /var/run/$NAME.pid $DAEMON $NAME && exit 0 || exit $?
+}
+
+# Define the main script logic
+case "$1" in
+    start)
+        log_daemon_msg "Starting $NAME"
+        do_start
+        case "$?" in
+            0|1) log_end_msg 0 ;;
+            2) log_end_msg 1 ;;
+        esac
+        ;;
+    stop)
+        log_daemon_msg "Stopping $NAME"
+        do_stop
+        case "$?" in
+            0|1) log_end_msg 0 ;;
+            2) log_end_msg 1 ;;
+        esac
+        ;;
+    restart)
+        log_daemon_msg "Restarting $NAME"
+        do_restart
+        case "$?" in
+            0|1) log_end_msg 0 ;;
+            2) log_end_msg 1 ;;
+        esac
+        ;;
+    status)
+        do_status
+        ;;
+    *)
+        echo "Usage: $SCRIPTNAME {start|stop|restart|status}" >&2
+        exit 3
+        ;;
+esac
+
+exit 0

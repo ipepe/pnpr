@@ -1,8 +1,0 @@
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/fix-webapp-permissions.sh
-
-[Install]
-WantedBy=multi-user.target
-# it starts with z so it runs after all other services are started
-Alias=zfix-webapp-permissions.service
