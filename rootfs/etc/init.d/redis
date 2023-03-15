@@ -1,25 +1,25 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:		redis
+# Provides:		redis-server
 # Required-Start:	$syslog $remote_fs
 # Required-Stop:	$syslog $remote_fs
 # Should-Start:		$local_fs
 # Should-Stop:		$local_fs
 # Default-Start:	2 3 4 5
 # Default-Stop:		0 1 6
-# Short-Description:	redis - Persistent key-value db
-# Description:		redis - Persistent key-value db
+# Short-Description:	redis-server - Persistent key-value db
+# Description:		redis-server - Persistent key-value db
 ### END INIT INFO
 
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/bin/redis-server
 DAEMON_ARGS=/etc/redis/redis.conf
-NAME=redis
-DESC=redis
+NAME=redis-server
+DESC=redis-server
 
 RUNDIR=/var/run/redis
-PIDFILE=/var/run/redis.pid
+PIDFILE=$RUNDIR/redis-server.pid
 
 test -x $DAEMON || exit 0
 
