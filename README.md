@@ -6,7 +6,7 @@ Run Your passenger nginx postgres ruby the simple way
 In docker-compose just specify that sidekiq service is /dev/null
 ```yml
     volumes:
-      - /dev/null:/etc/systemd/system/sidekiq.service
+      - /dev/null:/etc/init.d/sidekiq
 ```
 
 ## Cron/whenever is not working
