@@ -14,7 +14,7 @@ server {
         passenger_app_group_name rails_webapp;
         passenger_app_env ${RAILS_ENV};
         passenger_friendly_error_pages ${FRIENDLY_ERROR_PAGES};
-        passenger_max_requests 1000;
+        passenger_max_requests 10000;
     }
 
     location ~ ^/cable/? {
