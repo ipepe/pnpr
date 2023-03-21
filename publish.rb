@@ -16,6 +16,7 @@ NODE_VERSIONS.each do |node_version|
   RUBY_VERSIONS.each do |ruby_version|
     image_tag = "v3.2-u2004-r#{ruby_version}-n#{node_version}"
     image_name = "ipepe/pnpr:#{image_tag}"
+    env_level = "production"
     friendly_error_pages =
       if env_level == "production"
         "off"
