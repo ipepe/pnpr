@@ -3,6 +3,18 @@
 require "erb"
 
 FILE_PATH = "/etc/nginx/nginx.conf".freeze
+
+PASSENGER_MAX_REQUEST_QUEUE_SIZE = ENV.fetch(
+  "PASSENGER_MAX_REQUEST_QUEUE_SIZE",
+  1000
+).to_i
+
+PASSENGER_MAX_POOL_SIZE = ENV.fetch(
+  "PASSENGER_MAX_POOL_SIZE",
+  60
+).to_ig
+
+
 File.write(FILE_PATH, ERB.new(DATA.read).result)
 
 TEMPLATE = <<~ERB.freeze
@@ -75,8 +87,8 @@ TEMPLATE = <<~ERB.freeze
     passenger_pre_start https://localhost/;
     passenger_pre_start https://localhost/cable;
 
-    passenger_max_request_queue_size <%= ENV.fetch('PASSENGER_MAX_REQUEST_QUEUE_SIZE', 1000) %>;
-    passenger_max_pool_size <%= ENV.fetch("PASSENGER_MAX_POOL_SIZE", 60) %>;
+    passenger_max_request_queue_size <%= PASSENGER_MAX_REQUEST_QUEUE_SIZE %>;
+    passenger_max_pool_size <%= PASSENGER_MAX_POOL_SIZE %>;
 
   	##
   	# Virtual Host Configs
