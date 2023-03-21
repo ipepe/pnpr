@@ -14,10 +14,7 @@ jobs:
       matrix:
         ruby-version: ["2.3.1", "2.3.8", "2.4.10", "2.5.9", "2.6.10", "2.7.2", "2.7.5", "2.7.6", "2.7.7","3.0.4", "3.0.5","3.1.2", "3.1.3","3.2.0"]
         node-version: ['10','12','14','16','18']
-        env-level: ['production', 'staging', 'development']
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image for ${{ matrix.env-level }} with ruby-${{ matrix.ruby-version }} and node-${{ matrix.node-version }}
-      run: docker build . --file Dockerfile --tag ipepe/pnpr:v3.1-u2004-r${{ matrix.ruby-version }}-n${{ matrix.node-version }}-${{ matrix.env-level }} --build-arg RUBY_VERSION=${{ matrix.ruby-version }} --build-arg NODE_MAJOR_VERSION=${{ matrix.node-version }} --build-arg RAILS_ENV=${{ matrix.env-level }}
-    - name: Publish the Docker image
-      run: docker push ipepe/pnpr:v3.1-u2004-r${{ matrix.ruby-version }}-n${{ matrix.node-version }}-${{ matrix.env-level }}
+    - name: Build the Docker image with ruby-${{ matrix.ruby-version }} and node-${{ matrix.node-version }}
+      run: docker build . --file Dockerfile --tag ipepe/pnpr:v3.1-u2004-r${{ matrix.ruby-version }}-n${{ matrix.node-version }} --build-arg RUBY_VERSION=${{ matrix.ruby-version }} --build-arg NODE_MAJOR_VERSION=${{ matrix.node-version }}

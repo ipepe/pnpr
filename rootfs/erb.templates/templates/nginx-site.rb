@@ -3,13 +3,28 @@
 require "erb"
 
 FILE_PATH = "/etc/nginx/sites-enabled/default".freeze
+
 RAILS_ENV = ENV.fetch("RAILS_ENV", "production")
+
 FRIENDLY_ERROR_PAGES = ENV.fetch(
-  "FRIENDLY_ERROR_PAGES",
+  "PASSENGER_FRIENDLY_ERROR_PAGES",
   RAILS_ENV == "production" ? "off" : "on"
 )
 
+WITH_ACTION_CABLE = !ENV.fetch("NO_ACTION_CABLE", false)
+
+PASSENGER_FORCE_MAX_CONCURRENT_REQUESTS_PER_PROCESS = ENV.fetch(
+  "PASSENGER_FORCE_MAX_CONCURRENT_REQUESTS_PER_PROCESS",
+  0
+).to_i
+
+PASSENGER_MAX_REQUESTS = ENV.fetch(
+  "PASSENGER_MAX_REQUESTS",
+  10_000
+).to_i
+
 File.write(FILE_PATH, ERB.new(DATA.read).result)
+
 TEMPLATE = <<~ERB.freeze
   server {
       listen 0.0.0.0:80 default_server;
@@ -27,10 +42,10 @@ TEMPLATE = <<~ERB.freeze
           passenger_app_group_name rails_webapp;
           passenger_app_env <%= RAILS_ENV %>;
           passenger_friendly_error_pages <%= FRIENDLY_ERROR_PAGES %>;
-          passenger_max_requests <%= ENV.fetch('PASSENGER_MAX_REQUESTS', 10_000) %>;
+          passenger_max_requests <%= PASSENGER_MAX_REQUESTS %>;
       }
 
-      <% if ENV.fetch('NO_ACTION_CABLE', false) %>
+      <% if WITH_ACTION_CABLE %>
       location ~ ^/cable/? {
           passenger_enabled on;
           passenger_user webapp;
@@ -38,7 +53,7 @@ TEMPLATE = <<~ERB.freeze
           passenger_app_env <%= RAILS_ENV %>;
           passenger_friendly_error_pages <%= FRIENDLY_ERROR_PAGES %>;
           passenger_env_var RAILS_CABLE_PROCESS true;
-          passenger_force_max_concurrent_requests_per_process <%= ENV.fetch('PASSENGER_MAX_CONCURRENT_CABLE_REQUESTS_PER_PROCESS', 0) %>;
+          passenger_force_max_concurrent_requests_per_process <%= PASSENGER_FORCE_MAX_CONCURRENT_REQUESTS_PER_PROCESS %>;
       }
       <% end %>
 

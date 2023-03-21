@@ -12,8 +12,8 @@ server {
         passenger_enabled on;
         passenger_user webapp;
         passenger_app_group_name rails_webapp;
-        passenger_app_env ${RAILS_ENV};
-        passenger_friendly_error_pages ${FRIENDLY_ERROR_PAGES};
+        passenger_app_env production;
+        passenger_friendly_error_pages off;
         passenger_max_requests 10000;
     }
 
@@ -21,8 +21,8 @@ server {
         passenger_enabled on;
         passenger_user webapp;
         passenger_app_group_name rails_action_cable;
-        passenger_app_env ${RAILS_ENV};
-        passenger_friendly_error_pages ${FRIENDLY_ERROR_PAGES};
+        passenger_app_env production;
+        passenger_friendly_error_pages off;
         passenger_env_var RAILS_CABLE_PROCESS true;
         passenger_force_max_concurrent_requests_per_process 0;
     }
