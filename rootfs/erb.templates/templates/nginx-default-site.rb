@@ -13,17 +13,15 @@ FRIENDLY_ERROR_PAGES = ENV.fetch(
 
 WITH_ACTION_CABLE = !ENV.fetch("NO_ACTION_CABLE", false)
 
-PASSENGER_FORCE_MAX_CONCURRENT_REQUESTS_PER_PROCESS = ENV.fetch(
-  "PASSENGER_FORCE_MAX_CONCURRENT_REQUESTS_PER_PROCESS",
+CABLE_PASSENGER_FORCE_MAX_CONCURRENT_REQUESTS_PER_PROCESS = ENV.fetch(
+  "CABLE_PASSENGER_FORCE_MAX_CONCURRENT_REQUESTS_PER_PROCESS",
   0
 ).to_i
 
 PASSENGER_MAX_REQUESTS = ENV.fetch(
   "PASSENGER_MAX_REQUESTS",
-  10_000
+  3_000
 ).to_i
-
-File.write(FILE_PATH, ERB.new(DATA.read).result)
 
 TEMPLATE = <<~ERB.freeze
   server {
@@ -53,7 +51,7 @@ TEMPLATE = <<~ERB.freeze
           passenger_app_env <%= RAILS_ENV %>;
           passenger_friendly_error_pages <%= FRIENDLY_ERROR_PAGES %>;
           passenger_env_var RAILS_CABLE_PROCESS true;
-          passenger_force_max_concurrent_requests_per_process <%= PASSENGER_FORCE_MAX_CONCURRENT_REQUESTS_PER_PROCESS %>;
+          passenger_force_max_concurrent_requests_per_process <%= CABLE_PASSENGER_FORCE_MAX_CONCURRENT_REQUESTS_PER_PROCESS %>;
       }
       <% end %>
 
@@ -65,7 +63,7 @@ TEMPLATE = <<~ERB.freeze
       }
       location ~ /\. { deny  all; }
       location ~ \.php$ { deny  all; }
-      error_page 404              /404.html;
+      error_page 404 403          /40x.html;
       error_page 500 502 503 504  /50x.html;
       location = /50x.html { root html; }
 
@@ -74,3 +72,5 @@ TEMPLATE = <<~ERB.freeze
       more_clear_headers  'Server' 'X-Powered-By' 'X-Runtime' 'X-Request-Id' 'X-Rack-Cache';
   }
 ERB
+
+File.write(FILE_PATH, ERB.new(TEMPLATE).result)

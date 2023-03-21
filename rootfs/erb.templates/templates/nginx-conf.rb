@@ -12,10 +12,8 @@ PASSENGER_MAX_REQUEST_QUEUE_SIZE = ENV.fetch(
 PASSENGER_MAX_POOL_SIZE = ENV.fetch(
   "PASSENGER_MAX_POOL_SIZE",
   60
-).to_ig
+).to_i
 
-
-File.write(FILE_PATH, ERB.new(DATA.read).result)
 
 TEMPLATE = <<~ERB.freeze
   user www-data;
@@ -99,3 +97,5 @@ TEMPLATE = <<~ERB.freeze
   	include /etc/nginx/sites-enabled/*;
   }
 ERB
+
+File.write(FILE_PATH, ERB.new(TEMPLATE).result)

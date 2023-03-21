@@ -6,9 +6,6 @@ FILE_PATH = "/etc/init.d/sidekiq".freeze
 
 RAILS_ENV = ENV.fetch("RAILS_ENV", "production")
 
-File.write(FILE_PATH, ERB.new(DATA.read).result)
-system("chmod +x #{FILE_PATH}")
-
 TEMPLATE = <<~ERB.freeze
   #!/bin/bash
   ### BEGIN INIT INFO
@@ -77,3 +74,6 @@ TEMPLATE = <<~ERB.freeze
 
   exit 0
 ERB
+
+File.write(FILE_PATH, ERB.new(TEMPLATE).result)
+system("chmod +x #{FILE_PATH}")
