@@ -17,7 +17,7 @@ ENV_LEVELS = ["production", "staging", "development"].freeze
 NODE_VERSIONS.each do |node_version|
   RUBY_VERSIONS.each do |ruby_version|
     ENV_LEVELS.each do |env_level|
-      image_tag = "v3.1-u2004-r#{ruby_version}-n#{node_version}-#{env_level}"
+      image_tag = "v3.2-u2004-r#{ruby_version}-n#{node_version}-#{env_level}"
       image_name = "ipepe/pnpr:#{image_tag}"
       friendly_error_pages =
         if env_level == "production"

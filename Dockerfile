@@ -78,12 +78,10 @@ RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /etc/environment && \
     echo "NODE_ENV=${NODE_ENV}" >> /etc/environment && \
     echo "FRIENDLY_ERROR_PAGES=${FRIENDLY_ERROR_PAGES}" >> /etc/environment
 
-# setup nginx
-RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/default && \
-    sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -i /etc/init.d/sidekiq
-RUN nginx -t
+RUN bash /erb.templates/render.sh && nginx -t
 
 HEALTHCHECK --interval=5s --timeout=3s --start-period=30s --retries=3 CMD curl -f http://localhost/healtcheck || exit 1
 VOLUME "/home/webapp/.ssh"
+VOLUME "/home/webapp/webapp"
 EXPOSE 22 80 9149 8080 8081 8082
 CMD ["/docker-entrypoint.rb"]

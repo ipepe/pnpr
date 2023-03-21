@@ -1,3 +1,13 @@
+#!/usr/bin/env ruby
+
+require "erb"
+
+FILE_PATH = "/etc/init.d/sidekiq".freeze
+
+File.write(FILE_PATH, ERB.new(DATA.read).result)
+system("chmod +x #{FILE_PATH}")
+
+__END__
 #!/bin/bash
 ### BEGIN INIT INFO
 # Provides:          sidekiq
@@ -15,7 +25,7 @@
 APP_ROOT="/home/webapp/webapp/current"
 PIDFILE="/home/webapp/webapp/shared/sidekiq.pid"
 LOGFILE="$APP_ROOT/log/sidekiq.log"
-RAILS_ENV=${RAILS_ENV}
+RAILS_ENV="<%= ENV.fetch('RAILS_ENV') %>"
 SIDEKIQ_OPTIONS="-e $RAILS_ENV -C $APP_ROOT/config/sidekiq.yml"
 BUNDLE_BIN="/home/webapp/.rbenv/shims/bundle"
 SIDEKIQ_BIN="$BUNDLE_BIN exec sidekiq"
