@@ -24,7 +24,7 @@ PASSENGER_MAX_REQUESTS = ENV.fetch(
 ).to_i
 
 TEMPLATE = <<~ERB.freeze
-  server {
+    server {
       listen 0.0.0.0:80 default_server;
       server_name _;
 
@@ -51,7 +51,7 @@ TEMPLATE = <<~ERB.freeze
           passenger_app_env <%= RAILS_ENV %>;
           passenger_friendly_error_pages <%= FRIENDLY_ERROR_PAGES %>;
           passenger_env_var RAILS_CABLE_PROCESS true;
-          passenger_force_max_concurrent_requests_per_process <%= CABLE_PASSENGER_FORCE_MAX_CONCURRENT_REQUESTS_PER_PROCESS %>;
+          passenger_force_max_concurrent_requests_per_process 0;
       }
       <% end %>
 
@@ -63,7 +63,7 @@ TEMPLATE = <<~ERB.freeze
       }
       location ~ /\. { deny  all; }
       location ~ \.php$ { deny  all; }
-      error_page 404 403          /40x.html;
+      error_page 404              /404.html;
       error_page 500 502 503 504  /50x.html;
       location = /50x.html { root html; }
 
