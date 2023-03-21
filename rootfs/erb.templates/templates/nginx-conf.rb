@@ -21,6 +21,7 @@ TEMPLATE = <<~ERB.freeze
   user www-data;
   worker_processes 4;
   pid /run/nginx.pid;
+  include /etc/nginx/modules-enabled/*.conf;
 
   events {
   	worker_connections 768;
