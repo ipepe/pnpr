@@ -9,7 +9,7 @@ services:
         - RUBY_VERSION=2.3.1
         - NODE_MAJOR_VERSION=10
     environment:
-      PGPASSWORD: Password1
+      POSTGRES_PASSWORD: Password1
     ports:
       - "1022:22"
       - "1080:80"

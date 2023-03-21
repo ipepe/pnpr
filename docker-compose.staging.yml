@@ -7,15 +7,19 @@ services:
     healthcheck:
       disable: true
     environment:
-      PGPASSWORD: Password1
+      POSTGRES_PASSWORD: 'Password1'
+      RAILS_ENV: 'staging'
+      FRIENDLY_ERROR_PAGES: 'on'
     links:
       - postgres_db
     ports:
-      - "3322:22"
+      - "3022:22"
       - "3080:80"
+      - "9149:9149"
     volumes:
       - ./data/webapp:/home/webapp/webapp
       - ./data/ssh:/home/webapp/.ssh
+      - ./data/dbdumps:/dbdumps
     expose:
       - 80
     labels:

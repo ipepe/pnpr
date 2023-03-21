@@ -14,16 +14,15 @@ PASSENGER_MAX_POOL_SIZE = ENV.fetch(
   60
 ).to_i
 
-
 TEMPLATE = <<~ERB.freeze
   user www-data;
-  worker_processes 4;
+  worker_processes auto;
   pid /run/nginx.pid;
   include /etc/nginx/modules-enabled/*.conf;
 
   events {
-  	worker_connections 768;
-  	# multi_accept on;
+      worker_connections 768;
+      # multi_accept on;
   }
 
   http {
@@ -77,7 +76,6 @@ TEMPLATE = <<~ERB.freeze
   	##
   	# Phusion Passenger config
   	##
-
 
   	passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;
   	passenger_ruby /home/webapp/.rbenv/shims/ruby;
