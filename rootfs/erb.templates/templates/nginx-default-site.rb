@@ -61,11 +61,6 @@ TEMPLATE = <<~ERB.freeze
           expires max;
           add_header Cache-Control public;
       }
-      location ~ /\. { deny  all; }
-      location ~ \.php$ { deny  all; }
-      error_page 404              /404.html;
-      error_page 500 502 503 504  /50x.html;
-      location = /50x.html { root html; }
 
       passenger_env_var HTTP_X_FORWARDED_PROTO https;
       server_tokens off;
