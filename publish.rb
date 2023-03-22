@@ -24,7 +24,6 @@ NODE_VERSIONS.each do |node_version|
       end
     puts "Building #{image_name}"
     `docker build . --tag "#{image_name}" \
-            --cache-from docker.io/#{image_name} \
             --build-arg RUBY_VERSION=#{ruby_version} \
             --build-arg NODE_MAJOR_VERSION=#{node_version} \
             --build-arg RAILS_ENV=#{env_level} \
