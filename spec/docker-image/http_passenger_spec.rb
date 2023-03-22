@@ -40,21 +40,17 @@ RSpec.describe "HTTP/Passenger" do
     end
   end
 
-  describe 'non / path' do
-    xit 'returns 200 too' do
-
+  describe "non / path" do
+    xit "returns 200 too" do
     end
   end
 
-  describe 'friendly error pages' do
-
+  describe "friendly error pages" do
   end
 
-  describe 'custom 404.html page' do
-
+  describe "custom 404.html page" do
   end
 
-  describe 'custom 500.html page' do
-
+  describe "custom 500.html page" do
   end
 end

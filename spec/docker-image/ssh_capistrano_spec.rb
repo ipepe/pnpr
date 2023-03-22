@@ -1,4 +1,3 @@
-
 RSpec.describe "SSH/Capistrano" do
   let(:host) do
     ENV.fetch("TEST_HOST", "localhost")

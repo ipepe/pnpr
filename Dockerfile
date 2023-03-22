@@ -72,11 +72,11 @@ ARG RAILS_ENV=production
 ARG NODE_ENV=production
 ARG FRIENDLY_ERROR_PAGES=off
 
-RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /etc/environment && \
-    echo "NODE_VERSION=${NODE_VERSION}" >> /etc/environment && \
-    echo "RAILS_ENV=${RAILS_ENV}" >> /etc/environment && \
-    echo "NODE_ENV=${NODE_ENV}" >> /etc/environment && \
-    echo "FRIENDLY_ERROR_PAGES=${FRIENDLY_ERROR_PAGES}" >> /etc/environment
+RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /erb.templates/templates/etc-environment.rb && \
+    echo "NODE_MAJOR_VERSION=${NODE_MAJOR_VERSION}" >> /erb.templates/templates/etc-environment.rb && \
+    echo "RAILS_ENV=${RAILS_ENV}" >> /erb.templates/templates/etc-environment.rb && \
+    echo "NODE_ENV=${NODE_ENV}" >> /erb.templates/templates/etc-environment.rb && \
+    echo "FRIENDLY_ERROR_PAGES=${FRIENDLY_ERROR_PAGES}" >> /erb.templates/templates/etc-environment.rb
 
 RUN nginx -t && bash /erb.templates/render.sh && nginx -t
 
