@@ -33,12 +33,26 @@ TEMPLATE = <<~ERB.freeze
   
   start() {
     cd $APP_ROOT
-    su webapp -c "$FOREMAN_BIN $FOREMAN_OPTIONS >>$LOGFILE 2>&1 & echo \$! > $PIDFILE"
+    start-stop-daemon --start --chdir $APP_ROOT --pidfile $PIDFILE --make-pidfile --user webapp --background --exec $FOREMAN_BIN -- $FOREMAN_OPTIONS >>$LOGFILE 2>&1
+    echo "Starting Foreman..."
+    sleep 1
+    if [ -f $PIDFILE ]; then
+      echo "Foreman started with PID `cat $PIDFILE`."
+    else
+      echo "Failed to start Foreman."
+    fi
   }
   
   stop() {
     cd $APP_ROOT
-    su webapp -c "kill -TERM `cat $PIDFILE` && rm -f $PIDFILE"
+    start-stop-daemon --stop --pidfile $PIDFILE --remove-pidfile
+    echo "Stopping Foreman..."
+    sleep 1
+    if [ ! -f $PIDFILE ]; then
+      echo "Foreman stopped."
+    else
+      echo "Failed to stop Foreman."
+    fi
   }
   
   status() {

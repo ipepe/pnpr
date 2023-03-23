@@ -41,8 +41,8 @@ RUN git clone https://github.com/sstephenson/rbenv.git /home/webapp/.rbenv && \
     echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:\$PATH" >> /home/webapp/.bashrc && \
     echo "export RBENV_ROOT=/home/webapp/.rbenv" >> /home/webapp/.bashrc && \
     echo "gem: --no-rdoc --no-ri" > /home/webapp/.gemrc
-RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION}
-RUN /home/webapp/.rbenv/bin/rbenv global ${RUBY_VERSION} && \
+RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
+    /home/webapp/.rbenv/bin/rbenv global ${RUBY_VERSION} && \
     /home/webapp/.rbenv/shims/gem install bundler:1.17.3 && \
     /home/webapp/.rbenv/shims/gem install foreman && \
     /home/webapp/.rbenv/bin/rbenv rehash
