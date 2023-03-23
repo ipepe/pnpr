@@ -33,6 +33,7 @@ TEMPLATE = <<~ERB.freeze
   
   start() {
     cd $APP_ROOT
+    touch $PIDFILE # create empty PID file
     chown webapp:webapp $PIDFILE # change ownership of PID file
     start-stop-daemon --start --chuid webapp:webapp --chdir $APP_ROOT --pidfile $PIDFILE --make-pidfile --background --exec $FOREMAN_BIN -- $FOREMAN_OPTIONS >>$LOGFILE 2>&1
     echo "Starting Foreman..."
