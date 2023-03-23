@@ -33,6 +33,7 @@ TEMPLATE = <<~ERB.freeze
   
   start() {
     cd $APP_ROOT
+    chown webapp:webapp $PIDFILE # change ownership of PID file
     start-stop-daemon --start --chuid webapp:webapp --chdir $APP_ROOT --pidfile $PIDFILE --make-pidfile --background --exec $FOREMAN_BIN -- $FOREMAN_OPTIONS >>$LOGFILE 2>&1
     echo "Starting Foreman..."
     sleep 1
@@ -45,7 +46,7 @@ TEMPLATE = <<~ERB.freeze
   
   stop() {
     cd $APP_ROOT
-    start-stop-daemon --stop --pidfile $PIDFILE --remove-pidfile
+    start-stop-daemon --stop --user webapp --pidfile $PIDFILE --remove-pidfile
     echo "Stopping Foreman..."
     sleep 1
     if [ ! -f $PIDFILE ]; then

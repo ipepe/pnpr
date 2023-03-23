@@ -10,7 +10,7 @@ end.map do |line|
   line.split("=")
 end.to_h
 
-RUBY_VERSION = ENV.fetch("RUBY_VERSION", parsed_data["RUBY_VERSION"]) || "2.3.1"
+ENV_RUBY_VERSION = ENV.fetch("RUBY_VERSION", parsed_data["RUBY_VERSION"]) || "2.3.1"
 NODE_VERSION = ENV.fetch("NODE_VERSION", parsed_data["NODE_VERSION"]) || "10"
 RAILS_ENV = ENV.fetch("RAILS_ENV", parsed_data["RAILS_ENV"] || "production")
 NODE_ENV = ENV.fetch("NODE_ENV", parsed_data["NODE_ENV"] || "production")
