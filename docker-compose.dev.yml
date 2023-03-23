@@ -15,7 +15,6 @@ services:
       - "1080:80"
       - "9149:9149"
     volumes:
-      - /dev/null:/etc/systemd/system/sidekiq.service
       - ./data/webapp:/home/webapp/webapp
       - ./data/ssh:/home/webapp/.ssh
     links:
