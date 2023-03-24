@@ -42,7 +42,8 @@ TEMPLATE = <<~ERB.freeze
           chown "$APP_USER":"$APP_USER" "$LOG_DIR"
       fi
   
-      su -c "bash -c \"export RAILS_ENV='$RAILS_ENV'; cd '$APP_DIR' && $FOREMAN_CMD start --root '$APP_DIR' > '$LOG_FILE' 2>&1 & echo \$! > '$PID_FILE'\"" "$APP_USER"  
+      gosu $APP_USER /home/webapp/.rbenv/shims/foreman start --root=/home/webapp/webapp/current > '$LOG_FILE' 2>&1 & echo \$! > '$PID_FILE'
+      echo \$!  
       log_end_msg $?
       cat $PID_FILE
   }
