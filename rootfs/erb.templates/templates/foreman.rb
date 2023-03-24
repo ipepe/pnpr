@@ -43,20 +43,7 @@ TEMPLATE = <<~ERB.freeze
           chown "$APP_USER":"$APP_USER" "$LOG_DIR"
       fi
   
-      DEBUG_LOG_FILE="$LOG_DIR/$APP_NAME-debug.log"
-  
-      echo "Starting $APP_NAME with the following configuration:" > "$DEBUG_LOG_FILE"
-      echo "  APP_DIR: $APP_DIR" >> "$DEBUG_LOG_FILE"
-      echo "  APP_USER: $APP_USER" >> "$DEBUG_LOG_FILE"
-      echo "  PID_DIR: $PID_DIR" >> "$DEBUG_LOG_FILE"
-      echo "  PID_FILE: $PID_FILE" >> "$DEBUG_LOG_FILE"
-      echo "  LOG_DIR: $LOG_DIR" >> "$DEBUG_LOG_FILE"
-      echo "  LOG_FILE: $LOG_FILE" >> "$DEBUG_LOG_FILE"
-      echo "  BUNDLE_BIN: $BUNDLE_BIN" >> "$DEBUG_LOG_FILE"
-      echo "  FOREMAN_CMD: $FOREMAN_CMD" >> "$DEBUG_LOG_FILE"
-      echo "  RAILS_ENV: $RAILS_ENV" >> "$DEBUG_LOG_FILE"
-  
-      su -c "export RAILS_ENV='$RAILS_ENV'; cd '$APP_DIR' && $FOREMAN_CMD start --root '$APP_DIR' > '$LOG_FILE' 2>> '$DEBUG_LOG_FILE' & echo \$! > '$PID_FILE'" "$APP_USER"
+      su -c "export RAILS_ENV='$RAILS_ENV'; cd '$APP_DIR' && $FOREMAN_CMD start --root '$APP_DIR' > '$LOG_FILE' 2>&1 & echo \$! > '$PID_FILE'" "$APP_USER"
   
       log_end_msg $?
   }
@@ -81,10 +68,17 @@ TEMPLATE = <<~ERB.freeze
   stop() {
       log_daemon_msg "Stopping $APP_NAME"
   
-      start-stop-daemon --stop --quiet --pidfile "$PID_FILE"
-  
-      log_end_msg $?
+      if [ -e "$PID_FILE" ]; then
+          pid="$(cat "$PID_FILE")"
+          su -c "kill $pid" "$APP_USER"
+          rm -f "$PID_FILE"
+          log_end_msg $?
+      else
+          log_warning_msg "$APP_NAME is not running"
+          log_end_msg 1
+      fi
   }
+
   
   case "$1" in
     start)
