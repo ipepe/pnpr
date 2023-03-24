@@ -28,7 +28,7 @@ end
 end
 
 # ==== PREPARE CONTAINER AND START SERVICES ====
-SERVICE_NAMES = [:ssh, :"redis-server", :cron, :nginx, :"passenger-exporter"].freeze
+SERVICE_NAMES = [:ssh].freeze
 
 logged_system_call("bash /erb.templates/render.sh")
 logged_system_call("bash /bootstrap.sh")

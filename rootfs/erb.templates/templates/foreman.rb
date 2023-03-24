@@ -24,8 +24,7 @@ TEMPLATE = <<~ERB.freeze
   PID_FILE="$PID_DIR/$APP_NAME.pid"
   LOG_DIR="$APP_DIR/log"
   LOG_FILE="$LOG_DIR/$APP_NAME.log"
-  BUNDLE_BIN="/home/webapp/.rbenv/shims/bundle"
-  FOREMAN_CMD="$BUNDLE_BIN exec foreman"
+  FOREMAN_CMD="/home/webapp/.rbenv/shims/foreman"
   RAILS_ENV="<%= RAILS_ENV %>"
   
   . /lib/lsb/init-functions
@@ -43,7 +42,8 @@ TEMPLATE = <<~ERB.freeze
           chown "$APP_USER":"$APP_USER" "$LOG_DIR"
       fi
   
-      su -c "export RAILS_ENV='$RAILS_ENV'; cd '$APP_DIR' && $FOREMAN_CMD start --root '$APP_DIR' > '$LOG_FILE' 2>&1 & echo \$! > '$PID_FILE'" "$APP_USER"
+      su -c "$FOREMAN_CMD start --root '$APP_DIR' > '$LOG_FILE' 2>&1 & echo \$! > '$PID_FILE'" "$APP_USER"
+      cat $PID_FILE  
   
       log_end_msg $?
   }
