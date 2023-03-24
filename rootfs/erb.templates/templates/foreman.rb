@@ -7,7 +7,7 @@ FILE_PATH = "/etc/init.d/foreman".freeze
 RAILS_ENV = ENV.fetch("RAILS_ENV", "production")
 
 TEMPLATE = <<~ERB.freeze
-  #!/bin/sh
+  #!/bin/bash
   ### BEGIN INIT INFO
   # Provides:          foreman
   # Required-Start:    $local_fs $network $named $time $syslog
@@ -25,7 +25,7 @@ TEMPLATE = <<~ERB.freeze
   LOG_DIR="$APP_DIR/log"
   LOG_FILE="$LOG_DIR/$APP_NAME.log"
   FOREMAN_CMD="/home/webapp/.rbenv/shims/foreman"
-  RAILS_ENV="<%= RAILS_ENV %>"
+  RAILS_ENV="staging"
   
   . /lib/lsb/init-functions
   
@@ -42,10 +42,9 @@ TEMPLATE = <<~ERB.freeze
           chown "$APP_USER":"$APP_USER" "$LOG_DIR"
       fi
   
-      su -c "$FOREMAN_CMD start --root '$APP_DIR' > '$LOG_FILE' 2>&1 & echo \$! > '$PID_FILE'" "$APP_USER"
-      cat $PID_FILE  
-  
+      su -c "$FOREMAN_CMD start --root '$APP_DIR' > '$LOG_FILE' 2>&1 & echo \$! > '$PID_FILE'" "$APP_USER"  
       log_end_msg $?
+      cat $PID_FILE
   }
   
   status() {
