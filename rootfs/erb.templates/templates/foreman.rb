@@ -28,7 +28,8 @@ TEMPLATE = <<~ERB.freeze
   RAILS_ENV="staging"
   
   . /lib/lsb/init-functions
-  
+  su $APP_USER
+
   start() {
       log_daemon_msg "Starting $APP_NAME"
   
@@ -43,7 +44,7 @@ TEMPLATE = <<~ERB.freeze
       fi
   
       COMMAND="gosu $APP_USER $FOREMAN_CMD start --root=$APP_DIR"
-      su -c "/sbin/start-stop-daemon --start --background --make-pidfile --pidfile '$PID_FILE' --chdir '$APP_DIR' --chuid '$APP_USER' --startas /bin/bash -- -c 'exec $COMMAND > \"$LOG_FILE\" 2>&1'" "$APP_USER"
+      start-stop-daemon --start --background --make-pidfile --pidfile "$PID_FILE" --chdir "$APP_DIR" --chuid "$APP_USER" --startas /bin/bash -- -c "exec $COMMAND > '$LOG_FILE' 2>&1"  
       log_end_msg $?
   }
   
