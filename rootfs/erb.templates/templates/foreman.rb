@@ -43,10 +43,40 @@ TEMPLATE = <<~ERB.freeze
           chown "$APP_USER":"$APP_USER" "$LOG_DIR"
       fi
   
-      start-stop-daemon --start --background --quiet --pidfile "$PID_FILE" --make-pidfile --chuid "$APP_USER" --exec /bin/sh -- -c "export RAILS_ENV='$RAILS_ENV'; cd '$APP_DIR' && exec $FOREMAN_CMD start -f '$APP_DIR/Procfile' -l '$LOG_DIR' -p '$PID_DIR'"
+      DEBUG_LOG_FILE="$LOG_DIR/$APP_NAME-debug.log"
+  
+      echo "Starting $APP_NAME with the following configuration:" > "$DEBUG_LOG_FILE"
+      echo "  APP_DIR: $APP_DIR" >> "$DEBUG_LOG_FILE"
+      echo "  APP_USER: $APP_USER" >> "$DEBUG_LOG_FILE"
+      echo "  PID_DIR: $PID_DIR" >> "$DEBUG_LOG_FILE"
+      echo "  PID_FILE: $PID_FILE" >> "$DEBUG_LOG_FILE"
+      echo "  LOG_DIR: $LOG_DIR" >> "$DEBUG_LOG_FILE"
+      echo "  LOG_FILE: $LOG_FILE" >> "$DEBUG_LOG_FILE"
+      echo "  BUNDLE_BIN: $BUNDLE_BIN" >> "$DEBUG_LOG_FILE"
+      echo "  FOREMAN_CMD: $FOREMAN_CMD" >> "$DEBUG_LOG_FILE"
+      echo "  RAILS_ENV: $RAILS_ENV" >> "$DEBUG_LOG_FILE"
+  
+      su -c "export RAILS_ENV='$RAILS_ENV'; cd '$APP_DIR' && $FOREMAN_CMD start --root '$APP_DIR' > '$LOG_FILE' 2>> '$DEBUG_LOG_FILE' & echo \$! > '$PID_FILE'" "$APP_USER"
   
       log_end_msg $?
   }
+  
+  status() {
+    if [ -e "$PID_FILE" ]; then
+        pid="$(cat "$PID_FILE")"
+        if ps -p "$pid" > /dev/null; then
+            log_success_msg "$APP_NAME is running with PID $pid"
+            return 0
+        else
+            log_failure_msg "$APP_NAME is not running"
+            return 1
+        fi
+    else
+        log_failure_msg "$APP_NAME is not running"
+        return 1
+    fi
+  }
+  
   
   stop() {
       log_daemon_msg "Stopping $APP_NAME"
@@ -57,20 +87,23 @@ TEMPLATE = <<~ERB.freeze
   }
   
   case "$1" in
-      start)
-          start
-          ;;
-      stop)
-          stop
-          ;;
-      restart)
-          stop
-          start
-          ;;
-      *)
-          echo "Usage: $0 {start|stop|restart}"
-          exit 1
-          ;;
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    status)
+        status
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
   esac
   
   exit 0
