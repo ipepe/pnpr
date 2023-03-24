@@ -43,7 +43,7 @@ TEMPLATE = <<~ERB.freeze
       fi
   
       COMMAND="gosu $APP_USER $FOREMAN_CMD start --root=$APP_DIR"
-      gosu webapp start-stop-daemon --start --background --make-pidfile --pidfile "$PID_FILE" --chdir "$APP_DIR" --chuid "$APP_USER" --startas /bin/bash -- -c "exec $COMMAND > '$LOG_FILE' 2>&1"
+      su -c "/sbin/start-stop-daemon --start --background --make-pidfile --pidfile '$PID_FILE' --chdir '$APP_DIR' --chuid '$APP_USER' --startas /bin/bash -- -c 'exec $COMMAND > \"$LOG_FILE\" 2>&1'" "$APP_USER"
       log_end_msg $?
   }
   
