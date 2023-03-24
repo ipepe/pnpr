@@ -42,8 +42,8 @@ TEMPLATE = <<~ERB.freeze
           chown "$APP_USER":"$APP_USER" "$LOG_DIR"
       fi
   
-      gosu $APP_USER /home/webapp/.rbenv/shims/foreman start --root=/home/webapp/webapp/current > '$LOG_FILE' 2>&1
-      echo \$! > $PID_FILE  
+      COMMAND="gosu $APP_USER $FOREMAN_CMD start --root=$APP_DIR"
+      start-stop-daemon --start --background --make-pidfile --pidfile "$PID_FILE" --chdir "$APP_DIR" --chuid "$APP_USER" --startas /bin/bash -- -c "exec $COMMAND > '$LOG_FILE' 2>&1"  
       log_end_msg $?
   }
   
