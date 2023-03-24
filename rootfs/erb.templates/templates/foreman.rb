@@ -51,7 +51,7 @@ TEMPLATE = <<~ERB.freeze
   status() {
     if [ -e "$PID_FILE" ]; then
         pid="$(cat "$PID_FILE")"
-        if ps -p "$pid" > /dev/null; then
+        if ps --pid "$pid" > /dev/null; then
             log_success_msg "$APP_NAME is running with PID $pid"
             return 0
         else
@@ -70,7 +70,7 @@ TEMPLATE = <<~ERB.freeze
   
       if [ -e "$PID_FILE" ]; then
           pid="$(cat "$PID_FILE")"
-          su -c "kill $pid" "$APP_USER"
+          su -c "kill -TERM $pid" "$APP_USER"
           rm -f "$PID_FILE"
           log_end_msg $?
       else
