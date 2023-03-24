@@ -42,10 +42,9 @@ TEMPLATE = <<~ERB.freeze
           chown "$APP_USER":"$APP_USER" "$LOG_DIR"
       fi
   
-      gosu $APP_USER /home/webapp/.rbenv/shims/foreman start --root=/home/webapp/webapp/current > '$LOG_FILE' 2>&1 & echo \$! > '$PID_FILE'
-      echo \$!  
+      gosu $APP_USER /home/webapp/.rbenv/shims/foreman start --root=/home/webapp/webapp/current > '$LOG_FILE' 2>&1
+      echo \$! > $PID_FILE  
       log_end_msg $?
-      cat $PID_FILE
   }
   
   status() {
