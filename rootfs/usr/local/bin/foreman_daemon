@@ -114,11 +114,11 @@ end
 
 case ARGV[0].downcase
 when 'start'
-  start
+  start_daemon
 when 'stop'
-  stop
+  stop_daemon
 when 'status'
-  status
+  daemon_status
 else
   puts "Unknown command. Usage: ./daemonize.rb <start|stop|status>"
 end
