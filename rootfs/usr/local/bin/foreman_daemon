@@ -22,8 +22,17 @@ def daemonize
   STDERR.reopen STDOUT
 end
 
+def change_user_to_webapp
+  user = Etc.getpwnam(RUN_AS_USER)
+  Process::UID.change_privilege(user.uid)
+  Process::GID.change_privilege(user.gid)
+end
+
 def run_script
-  system("#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1")
+  change_user_to_webapp
+  foreman_pid = spawn("#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1")
+  Process.detach(foreman_pid)
+  File.write(PIDFILE, foreman_pid.to_s)
 end
 
 def write_pid_file
@@ -31,12 +40,20 @@ def write_pid_file
 end
 
 def setup_signal_handling
-  trap 'TERM' do
-    FileUtils.rm_f(DAEMON_PIDFILE)
-    puts "Daemon terminated"
-    exit
+  [:INT, :QUIT, :TERM].each do |signal|
+    Signal.trap(signal) do
+      if File.exist?(PIDFILE)
+        foreman_pid = File.read(PIDFILE).to_i
+        Process.kill(signal, foreman_pid)
+        FileUtils.rm_f(PIDFILE)
+      end
+      FileUtils.rm_f(DAEMON_PIDFILE)
+      puts "Daemon terminated by #{signal}"
+      exit
+    end
   end
 end
+
 
 def start
   if File.exist?(DAEMON_PIDFILE)
