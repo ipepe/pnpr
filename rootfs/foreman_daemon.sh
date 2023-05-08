@@ -4,8 +4,8 @@
 APP_ROOT="/home/webapp/webapp/current"
 FOREMAN_BIN="/home/webapp/.rbenv/shims/foreman"
 PROCFILE="$APP_ROOT/Procfile"
-PIDFILE="/home/webapp/webapp/shared/pids/foreman.pid"
-LOG_DIR="/home/webapp/webapp/shared/logs/foreman"
+PIDFILE="/home/webapp/webapp/shared/foreman.pid"
+LOG_DIR="/home/webapp/webapp/shared/logs"
 RUN_AS_USER="webapp"
 
 # Check if user exists
