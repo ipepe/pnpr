@@ -69,19 +69,43 @@ end
 
 def stop
   if File.exist?(DAEMON_PIDFILE)
-    pid = File.read(DAEMON_PIDFILE).to_i
-    Process.kill('TERM', pid)
+    daemon_pid = File.read(DAEMON_PIDFILE).to_i
+    begin
+      Process.kill('TERM', daemon_pid)
+      FileUtils.rm_f(DAEMON_PIDFILE)
+      puts "Daemon stopped"
+    rescue Errno::ESRCH
+      puts "Daemon is not running, but PID file exists"
+      FileUtils.rm_f(DAEMON_PIDFILE)
+    end
   else
     puts "Daemon is not running"
   end
 end
 
+
 def status
   if File.exist?(DAEMON_PIDFILE)
-    pid = File.read(DAEMON_PIDFILE).to_i
-    puts "Daemon is running with PID: #{pid}"
+    daemon_pid = File.read(DAEMON_PIDFILE).to_i
+    if process_alive?(daemon_pid)
+      puts "Daemon is running with PID: #{daemon_pid}"
+    else
+      puts "Daemon is not running, but PID file exists"
+      FileUtils.rm_f(DAEMON_PIDFILE)
+    end
   else
     puts "Daemon is not running"
+  end
+end
+
+def process_alive?(pid)
+  begin
+    Process.kill(0, pid)
+    return true
+  rescue Errno::ESRCH
+    return false
+  rescue Errno::EPERM
+    return true
   end
 end
 

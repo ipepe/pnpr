@@ -43,6 +43,7 @@ end
 logged_system_call("/usr/local/bin/foreman_daemon stop")
 logged_system_call("/usr/local/bin/foreman_daemon start")
 
+log "Container prepared and services started"
 log "All services started. Waiting for interrupt..."
 
 # ==== REAP ALL ZOMBIE AND DEFUNCT SERVICES ====
