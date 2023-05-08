@@ -65,8 +65,9 @@ COPY rootfs /
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
 RUN chmod g+x,o+x /home/webapp &&  \
     chmod +x /docker-entrypoint.rb && \
+    chmod 0600 /etc/logrotate.d/* && \
     rm /etc/init.d/dbus /etc/init.d/hwclock.sh /etc/init.d/procps && \
-    (crontab -l; echo "33 3 * * * /usr/sbin/logrotate") | crontab -
+    (crontab -l; echo "33 3 * * * /usr/sbin/logrotate /etc/logrotate.d/*") | crontab -
 
 ARG RAILS_ENV=production
 ARG NODE_ENV=production
