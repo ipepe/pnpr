@@ -65,7 +65,6 @@ COPY rootfs /
 # setup logrotate
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
 RUN chmod g+x,o+x /home/webapp &&  \
-    chmod +x /usr/local/bin/overmind && \
     chmod +x /docker-entrypoint.rb && \
     chmod 0600 /etc/logrotate.d/* && \
     rm /etc/init.d/dbus /etc/init.d/hwclock.sh /etc/init.d/procps && \
