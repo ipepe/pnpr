@@ -38,6 +38,8 @@ SERVICE_NAMES.each do |service_name|
   logged_system_call("service #{service_name} start")
 end
 
+logged_system_call("/usr/local/bin/foreman_daemon start")
+
 log "All services started. Waiting for interrupt..."
 
 # ==== REAP ALL ZOMBIE AND DEFUNCT SERVICES ====
