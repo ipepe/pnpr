@@ -40,8 +40,9 @@ SERVICE_NAMES.each do |service_name|
   logged_system_call("service #{service_name} start")
 end
 
-logged_system_call("/usr/local/bin/foreman_daemon stop")
-logged_system_call("/usr/local/bin/foreman_daemon start")
+logged_system_call('su -s /bin/sh -c "exec foreman_daemon stop" webapp')
+logged_system_call('su -s /bin/sh -c "exec foreman_daemon start" webapp')
+logged_system_call("foreman_daemon start")
 
 log "Container prepared and services started"
 log "All services started. Waiting for interrupt..."

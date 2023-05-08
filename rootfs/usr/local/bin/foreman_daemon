@@ -12,6 +12,7 @@ RUN_AS_USER = "webapp"
 DAEMON_PIDFILE = "/home/webapp/webapp/foreman_daemon.pid"
 
 def daemonize
+  change_user_to_webapp
   exit if fork
   Process.setsid
   exit if fork
