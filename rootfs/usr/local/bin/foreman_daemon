@@ -1,69 +1,85 @@
-#!/bin/bash
+#!/usr/bin/env ruby
 
-# Configuration
-APP_ROOT="/home/webapp/webapp/current"
-FOREMAN_BIN="/home/webapp/.rbenv/shims/foreman"
-PROCFILE="$APP_ROOT/Procfile"
-PIDFILE="/home/webapp/webapp/shared/foreman.pid"
-LOG_DIR="/home/webapp/webapp/shared/logs"
-RUN_AS_USER="webapp"
+require 'fileutils'
 
-# Check if user exists
-if ! id -u $RUN_AS_USER > /dev/null 2>&1; then
-  echo "User $RUN_AS_USER not found. Exiting."
+APP_ROOT = "/home/webapp/webapp/current"
+FOREMAN_BIN = "/home/webapp/.rbenv/shims/foreman"
+PROCFILE = "#{APP_ROOT}/Procfile"
+PIDFILE = "/home/webapp/webapp/shared/foreman.pid"
+LOG_DIR = "/home/webapp/webapp/shared/logs"
+RUN_AS_USER = "webapp"
+DAEMON_PIDFILE = "/home/webapp/webapp/foreman_daemon.pid"
+
+def daemonize
+  exit if fork
+  Process.setsid
+  exit if fork
+  Dir.chdir '/'
+  File.umask 0000
+
+  STDIN.reopen '/dev/null'
+  STDOUT.reopen '/dev/null', 'a'
+  STDERR.reopen STDOUT
+end
+
+def run_script
+  system("#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1")
+end
+
+def write_pid_file
+  File.write(DAEMON_PIDFILE, Process.pid.to_s)
+end
+
+def setup_signal_handling
+  trap 'TERM' do
+    FileUtils.rm_f(DAEMON_PIDFILE)
+    puts "Daemon terminated"
+    exit
+  end
+end
+
+def start
+  if File.exist?(DAEMON_PIDFILE)
+    puts "Daemon is already running"
+    exit 1
+  end
+
+  daemonize
+  write_pid_file
+  setup_signal_handling
+  run_script
+end
+
+def stop
+  if File.exist?(DAEMON_PIDFILE)
+    pid = File.read(DAEMON_PIDFILE).to_i
+    Process.kill('TERM', pid)
+  else
+    puts "Daemon is not running"
+  end
+end
+
+def status
+  if File.exist?(DAEMON_PIDFILE)
+    pid = File.read(DAEMON_PIDFILE).to_i
+    puts "Daemon is running with PID: #{pid}"
+  else
+    puts "Daemon is not running"
+  end
+end
+
+if ARGV.empty?
+  puts "Usage: ./daemonize.rb <start|stop|status>"
   exit 1
-fi
+end
 
-# Create log directory if it doesn't exist
-if [ ! -d "$LOG_DIR" ]; then
-  mkdir -p "$LOG_DIR"
-  chown "$RUN_AS_USER":"$RUN_AS_USER" "$LOG_DIR"
-fi
-
-# Function to start foreman
-start_foreman() {
-  if [ -f "$PIDFILE" ]; then
-    echo "PID file exists. Foreman may be already running."
-    exit 1
-  fi
-
-  echo "Starting Foreman..."
-  cd "$APP_ROOT"
-  su -s /bin/sh -c "exec $FOREMAN_BIN start -f $PROCFILE -d $APP_ROOT > $LOG_DIR/foreman.log 2>&1" "$RUN_AS_USER" &
-  FOREMAN_PID=$!
-  echo $FOREMAN_PID > "$PIDFILE"
-  sleep 2
-  echo "Foreman started with PID $FOREMAN_PID."
-}
-
-# Function to stop foreman
-stop_foreman() {
-  if [ ! -f "$PIDFILE" ]; then
-    echo "PID file not found. Foreman may not be running."
-    exit 1
-  fi
-
-  echo "Stopping Foreman..."
-  kill -TERM "$(cat "$PIDFILE")"
-  rm -f "$PIDFILE"
-  sleep 2
-  echo "Foreman stopped."
-}
-
-# Parse command-line arguments
-case "$1" in
-  start)
-    start_foreman
-    ;;
-  stop)
-    stop_foreman
-    ;;
-  restart)
-    stop_foreman
-    start_foreman
-    ;;
-  *)
-    echo "Usage: $0 {start|stop|restart}"
-    exit 1
-    ;;
-esac
+case ARGV[0].downcase
+when 'start'
+  start
+when 'stop'
+  stop
+when 'status'
+  status
+else
+  puts "Unknown command. Usage: ./daemonize.rb <start|stop|status>"
+end

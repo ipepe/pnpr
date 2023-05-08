@@ -5,6 +5,10 @@
 # 2. prepare container (file permissions, etc) and start all relevant services in proper order
 # 3. reap all zombie/defunct processes
 
+# SERVICE_NAMES = [:ssh, :"redis-server", :cron, :nginx, :"passenger-exporter", :sidekiq].freeze
+SERVICE_NAMES = [:ssh, :"redis-server"].freeze
+
+
 def log(message)
   puts($PROGRAM_NAME = "[PNPR] #{message}")
 end
@@ -28,8 +32,6 @@ end
 end
 
 # ==== PREPARE CONTAINER AND START SERVICES ====
-SERVICE_NAMES = [:ssh, :"redis-server"].freeze
-
 logged_system_call("bash /erb.templates/render.sh")
 logged_system_call("bash /bootstrap.sh")
 logged_system_call('chown -R webapp:webapp "/home/webapp" &')
