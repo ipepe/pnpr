@@ -23,29 +23,31 @@ fi
 # Function to start foreman
 start_foreman() {
   if [ -f "$PIDFILE" ]; then
-    echo "PID file exists. foreman may be already running."
+    echo "PID file exists. Foreman may be already running."
     exit 1
   fi
 
-  echo "Starting foreman..."
+  echo "Starting Foreman..."
   cd "$APP_ROOT"
-  su -s /bin/sh -c "exec $FOREMAN_BIN start -f $PROCFILE -d $APP_ROOT -p $PIDFILE > $LOG_DIR/foreman.log 2>&1" "$RUN_AS_USER" &
+  su -s /bin/sh -c "exec $FOREMAN_BIN start -f $PROCFILE -d $APP_ROOT > $LOG_DIR/foreman.log 2>&1" "$RUN_AS_USER" &
+  FOREMAN_PID=$!
+  echo $FOREMAN_PID > "$PIDFILE"
   sleep 2
-  echo "foreman started with PID $(cat $PIDFILE)."
+  echo "Foreman started with PID $FOREMAN_PID."
 }
 
 # Function to stop foreman
 stop_foreman() {
   if [ ! -f "$PIDFILE" ]; then
-    echo "PID file not found. foreman may not be running."
+    echo "PID file not found. Foreman may not be running."
     exit 1
   fi
 
-  echo "Stopping foreman..."
+  echo "Stopping Foreman..."
   kill -TERM "$(cat "$PIDFILE")"
   rm -f "$PIDFILE"
   sleep 2
-  echo "foreman stopped."
+  echo "Foreman stopped."
 }
 
 # Parse command-line arguments
