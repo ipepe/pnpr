@@ -17,87 +17,74 @@ TEMPLATE = <<~ERB.freeze
   # Description:       Start Foreman to manage the webapp process
   ### END INIT INFO
   
-  APP_NAME="foreman"
-  APP_DIR="/home/webapp/webapp/current"
-  APP_USER="webapp"
-  PID_DIR="/home/webapp/webapp/shared"
-  PID_FILE="$PID_DIR/$APP_NAME.pid"
-  LOG_DIR="$APP_DIR/log"
-  LOG_FILE="$LOG_DIR/$APP_NAME.log"
-  FOREMAN_CMD="/home/webapp/.rbenv/shims/foreman"
-  RAILS_ENV="staging"
+  # Configuration
+  APP_ROOT="/home/webapp/webapp/current"
+  FOREMAN_BIN="/home/webapp/.rbenv/shims/foreman"
+  PROCFILE="$APP_ROOT/Procfile"
+  PIDFILE="/home/webapp/webapp/shared/foreman.pid"
+  LOG_DIR="/home/webapp/webapp/shared/logs"
+  RUN_AS_USER="webapp"
   
+  # Check if user exists
+  if ! id -u $RUN_AS_USER > /dev/null 2>&1; then
+    echo "User $RUN_AS_USER not found. Exiting."
+    exit 1
+  fi
+
   . /lib/lsb/init-functions
-  su $APP_USER
-
-  start() {
-      log_daemon_msg "Starting $APP_NAME"
   
-      if [ ! -d "$PID_DIR" ]; then
-          mkdir -p "$PID_DIR"
-          chown "$APP_USER":"$APP_USER" "$PID_DIR"
-      fi
+  # Create log directory if it doesn't exist
+  if [ ! -d "$LOG_DIR" ]; then
+    mkdir -p "$LOG_DIR"
+    chown "$RUN_AS_USER":"$RUN_AS_USER" "$LOG_DIR"
+  fi
   
-      if [ ! -d "$LOG_DIR" ]; then
-          mkdir -p "$LOG_DIR"
-          chown "$APP_USER":"$APP_USER" "$LOG_DIR"
-      fi
-  
-      COMMAND="gosu $APP_USER $FOREMAN_CMD start --root=$APP_DIR"
-      start-stop-daemon --start --background --make-pidfile --pidfile "$PID_FILE" --chdir "$APP_DIR" --chuid "$APP_USER" --startas /bin/bash -- -c "exec $COMMAND > '$LOG_FILE' 2>&1"  
-      log_end_msg $?
-  }
-  
-  status() {
-    if [ -e "$PID_FILE" ]; then
-        pid="$(cat "$PID_FILE")"
-        if ps -p "$pid" > /dev/null 2>&1; then
-            log_success_msg "$APP_NAME is running with PID $pid"
-            return 0
-        else
-            log_failure_msg "$APP_NAME is not running"
-            return 1
-        fi
-    else
-        log_failure_msg "$APP_NAME is not running"
-        return 1
+  # Function to start foreman
+  start_foreman() {
+    if [ -f "$PIDFILE" ]; then
+      echo "PID file exists. Foreman may be already running."
+      exit 1
     fi
+  
+    echo "Starting Foreman..."
+    cd "$APP_ROOT"
+    su -s /bin/sh -c "exec $FOREMAN_BIN start -f $PROCFILE -d $APP_ROOT > $LOG_DIR/foreman.log 2>&1" "$RUN_AS_USER" &
+    FOREMAN_PID=$!
+    echo $FOREMAN_PID > "$PIDFILE"
+    sleep 2
+    echo "Foreman started with PID $FOREMAN_PID."
   }
   
+  # Function to stop foreman
+  stop_foreman() {
+    if [ ! -f "$PIDFILE" ]; then
+      echo "PID file not found. Foreman may not be running."
+      exit 1
+    fi
   
-  stop() {
-      log_daemon_msg "Stopping $APP_NAME"
-  
-      if [ -e "$PID_FILE" ]; then
-          pid="$(cat "$PID_FILE")"
-          su -c "kill -TERM $pid" "$APP_USER"
-          rm -f "$PID_FILE"
-          log_end_msg $?
-      else
-          log_warning_msg "$APP_NAME is not running"
-          log_end_msg 1
-      fi
+    echo "Stopping Foreman..."
+    kill -TERM "$(cat "$PIDFILE")"
+    rm -f "$PIDFILE"
+    sleep 2
+    echo "Foreman stopped."
   }
-
   
+  # Parse command-line arguments
   case "$1" in
     start)
-        start
-        ;;
+      start_foreman
+      ;;
     stop)
-        stop
-        ;;
+      stop_foreman
+      ;;
     restart)
-        stop
-        start
-        ;;
-    status)
-        status
-        ;;
+      stop_foreman
+      start_foreman
+      ;;
     *)
-        echo "Usage: $0 {start|stop|restart|status}"
-        exit 1
-        ;;
+      echo "Usage: $0 {start|stop|restart}"
+      exit 1
+      ;;
   esac
   
   exit 0
