@@ -67,8 +67,9 @@ COPY rootfs /
 RUN chmod g+x,o+x /home/webapp &&  \
     chmod +x /usr/local/bin/overmind && \
     chmod +x /docker-entrypoint.rb && \
+    chmod 0600 /etc/logrotate.d/* && \
     rm /etc/init.d/dbus /etc/init.d/hwclock.sh /etc/init.d/procps && \
-    (crontab -l; echo "33 3 * * * /usr/sbin/logrotate") | crontab -
+    (crontab -l; echo "33 3 * * * /usr/sbin/logrotate /etc/logrotate.d/*") | crontab -
 
 ARG RAILS_ENV=production
 ARG NODE_ENV=production

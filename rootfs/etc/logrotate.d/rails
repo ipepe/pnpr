@@ -1,4 +1,5 @@
 /home/webapp/webapp/current/log/*.log {
+  su webapp webapp
   daily
   size 100M
   missingok
