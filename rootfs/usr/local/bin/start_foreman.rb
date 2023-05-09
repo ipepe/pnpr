@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/home/webapp/.rbenv/shims/ruby
 
 require 'fileutils'
 require 'etc'
@@ -10,6 +10,8 @@ PIDFILE = "/home/webapp/webapp/shared/foreman.pid"
 LOG_DIR = "/home/webapp/webapp/current/logs"
 RUN_AS_USER = "webapp"
 DAEMON_PIDFILE = "/home/webapp/webapp/foreman_daemon.pid"
-FOREMAN_START_COMMAND = "#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} -r /home/webapp/webapp/shared > #{LOG_DIR}/foreman.log 2>&1"
+FOREMAN_START_COMMAND = "#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1"
 
+puts("Starting foreman daemon")
+puts(FOREMAN_START_COMMAND)
 system(FOREMAN_START_COMMAND)
