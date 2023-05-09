@@ -4,7 +4,7 @@ require 'fileutils'
 require 'etc'
 
 APP_ROOT = "/home/webapp/webapp/current"
-FOREMAN_BIN = "/home/webapp/.rbenv/shims/foreman"
+FOREMAN_BIN = "RBENV_ROOT=/home/webapp/.rbenv exec /home/webapp/.rbenv/libexec/rbenv exec foreman"
 PROCFILE = "#{APP_ROOT}/Procfile"
 PIDFILE = "/home/webapp/webapp/shared/foreman.pid"
 LOG_DIR = "/home/webapp/webapp/shared/logs"
