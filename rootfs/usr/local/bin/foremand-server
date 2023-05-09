@@ -53,12 +53,12 @@ def stop_foreman
   end
 end
 
-def foreman_status
+def foreman_status(io)
   if process_alive?(PIDFILE)
     foreman_pid = File.read(PIDFILE).to_i
-    puts "Foreman is running with PID: #{foreman_pid}"
+    io.write "Foreman is running with PID: #{foreman_pid}"
   else
-    puts "Foreman is not running"
+    io.write "Foreman is not running"
     FileUtils.rm_f(PIDFILE) if File.exist?(PIDFILE)
     exit 1
   end
@@ -69,11 +69,11 @@ def start_server
     begin
       case sock.readline.chomp.downcase
       when 'start'
-        start_foreman
+        start_foreman(sock)
       when 'stop'
-        stop_foreman
+        stop_foreman(sock)
       when 'status'
-        foreman_status
+        foreman_status(sock)
       else
         puts "Unknown command. Usage: formand <start|stop|status>"
       end
