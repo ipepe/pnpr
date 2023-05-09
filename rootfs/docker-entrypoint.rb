@@ -40,8 +40,8 @@ SERVICE_NAMES.each do |service_name|
   logged_system_call("service #{service_name} start")
 end
 
-logged_system_call("pstree")
 logged_system_call("service --status-all")
+logged_system_call("pstree")
 
 log "Container prepared and services started"
 log "All services started. Waiting for interrupt..."
