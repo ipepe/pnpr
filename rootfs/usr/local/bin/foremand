@@ -21,12 +21,13 @@ rescue => e
   exit 1
 end
 
-def run_foreman
+def start_foreman
   change_user_to_webapp
   Dir.chdir APP_ROOT
   foreman_pid = spawn("#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1")
   Process.detach(foreman_pid)
   File.write(PIDFILE, foreman_pid.to_s)
+  puts "Foreman started with PID: #{foreman_pid}"
 end
 
 def stop_foreman
@@ -71,7 +72,7 @@ end
 
 case ARGV[0].downcase
 when 'start'
-  run_foreman
+  start_foreman
 when 'stop'
   stop_foreman
 when 'status'
