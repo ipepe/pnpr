@@ -5,8 +5,20 @@
 # 2. prepare container (file permissions, etc) and start all relevant services in proper order
 # 3. reap all zombie/defunct processes
 
-SERVICE_NAMES = [:ssh, :"redis-server", :cron, :nginx, :"passenger-exporter", :"foremand-supervisor"].freeze
-
+WITHOUT_SERVICE_NAMES = ENV[
+  "WITHOUT_SERVICE_NAMES"
+].to_s.split(",").map(&:strip)
+DEFAULT_SERVICE_NAMES = [
+  "ssh",
+  "redis-server",
+  "cron",
+  "nginx",
+  "passenger-exporter",
+  "foremand-supervisor"
+]
+SERVICE_NAMES = (
+  DEFAULT_SERVICE_NAMES - WITHOUT_SERVICE_NAMES
+).map(&:to_sym).freeze
 
 def log(message)
   puts($PROGRAM_NAME = "[PNPR] #{message}")
