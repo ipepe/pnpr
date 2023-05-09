@@ -6,7 +6,7 @@
 # 3. reap all zombie/defunct processes
 
 # SERVICE_NAMES = [:ssh, :"redis-server", :cron, :nginx, :"passenger-exporter", :"foremand-server"].freeze
-SERVICE_NAMES = [:ssh, :"foremand-server"].freeze
+SERVICE_NAMES = [:ssh].freeze
 
 
 def log(message)
@@ -42,6 +42,7 @@ end
 
 logged_system_call("service --status-all")
 logged_system_call("pstree")
+logged_system_call("foremand-server run")
 
 log "Container prepared and services started"
 log "All services started. Waiting for interrupt..."
