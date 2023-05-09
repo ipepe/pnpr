@@ -18,7 +18,9 @@ gemfile do
   gem 'daemons'
 end
 
+Dir.chdir "/home/webapp"
+
 require 'daemons'
-Daemons.run('start_foreman.rb', {
+Daemons.run('/usr/local/bin/start_foreman.rb', {
   dir: '/home/webapp/webapp'
 })
