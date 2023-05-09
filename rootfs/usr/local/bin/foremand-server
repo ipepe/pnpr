@@ -82,8 +82,6 @@ def start_server
     ensure
       puts "Sock close"
       sock.close
-      client.disconnect
-      puts "Client disconnected"
     end
   end
 end
