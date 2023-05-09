@@ -24,12 +24,12 @@ TEMPLATE = <<~ERB.freeze
   case "$1" in
     start)
       log_daemon_msg "Starting foremand-server"
-      foremand-server start 2> /var/log/foremand-server.log
+      foremand-server start
       log_end_msg $?
       ;;
     stop)
       log_daemon_msg "Stopping $APP_NAME"
-      foremand-server stop
+      killall foremand-server
       ;;
     restart|force-reload)
       $0 stop
@@ -37,7 +37,7 @@ TEMPLATE = <<~ERB.freeze
       $0 start
       ;;
     status)
-      foremand-server status
+      kill -0 `cat /var/run/foreman-server.pid` > /dev/null 2>&1
       ;;
     *)
       log_action_msg "Usage: $0 {start|stop|restart|force-reload|status}"
