@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'daemons'
+
 
 begin
-  user = Etc.getpwnam(RUN_AS_USER)
+  user = Etc.getpwnam("webapp")
   Process::UID.change_privilege(user.uid)
   Process::GID.change_privilege(user.gid)
 rescue => e
@@ -13,5 +13,4 @@ rescue => e
 end
 
 require 'daemons'
-
 Daemons.run('start_foreman.rb')

@@ -12,4 +12,4 @@ RUN_AS_USER = "webapp"
 DAEMON_PIDFILE = "/home/webapp/webapp/foreman_daemon.pid"
 FOREMAN_START_COMMAND = "#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} -r /home/webapp/webapp/shared > #{LOG_DIR}/foreman.log 2>&1"
 
-spawn(FOREMAN_START_COMMAND)
+system(FOREMAN_START_COMMAND)
