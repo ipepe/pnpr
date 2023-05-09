@@ -2,6 +2,7 @@
 
 require 'fileutils'
 require 'etc'
+require 'socket'
 
 APP_ROOT = "/home/webapp/webapp/current"
 FOREMAN_BIN = "RBENV_ROOT=/home/webapp/.rbenv exec /home/webapp/.rbenv/libexec/rbenv exec foreman"
