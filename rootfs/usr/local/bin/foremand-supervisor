@@ -68,9 +68,9 @@ end
 def foreman_status(io)
   if process_alive?(PIDFILE)
     foreman_pid = File.read(PIDFILE).to_i
-    io.write "Foreman is running with PID: #{foreman_pid}"
+    io.write "Foreman is running with PID: #{foreman_pid}\n"
   else
-    io.write "Foreman is not running"
+    io.write "Foreman is not running\n"
     FileUtils.rm_f(PIDFILE) if File.exist?(PIDFILE)
   end
 end
