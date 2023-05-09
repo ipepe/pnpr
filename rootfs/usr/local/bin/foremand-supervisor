@@ -78,25 +78,30 @@ def foreman_status(io)
 end
 
 def start_server
-  Socket.unix_server_loop("/var/run/foremand.sock") do |sock, client|
-    puts "Client connected"
-    begin
-      case sock.readline.chomp.downcase
-      when 'start'
-        start_foreman(sock)
-      when 'stop'
-        stop_foreman(sock)
-      when 'status'
-        foreman_status(sock)
-      else
-        puts "Unknown command. Usage: formand <start|stop|status>"
+  thread = Thread.new do
+    Socket.unix_server_loop("/var/run/foremand.sock") do |sock, client|
+      puts "Client connected"
+      begin
+        case sock.readline.chomp.downcase
+        when 'start'
+          start_foreman(sock)
+        when 'stop'
+          stop_foreman(sock)
+        when 'status'
+          foreman_status(sock)
+        else
+          puts "Unknown command. Usage: formand <start|stop|status>"
+        end
+        sock.flush
+      ensure
+        puts "Sock close"
+        sock.close
       end
-      sock.flush
-    ensure
-      puts "Sock close"
-      sock.close
     end
   end
+  sleep 1
+  FileUtils.chmod(0777, "/var/run/foremand.sock")
+  thread.join
 end
 
 def daemonize
