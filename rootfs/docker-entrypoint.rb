@@ -42,7 +42,6 @@ end
 
 logged_system_call("service --status-all")
 logged_system_call("pstree")
-logged_system_call("foremand-server run")
 
 log "Container prepared and services started"
 log "All services started. Waiting for interrupt..."
