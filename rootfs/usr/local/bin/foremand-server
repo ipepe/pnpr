@@ -84,7 +84,6 @@ def start_server
 end
 
 def daemonize
-  change_user_to_webapp
   exit if fork
   Process.setsid
   exit if fork
@@ -109,14 +108,7 @@ daemonize
 start_server
 
 
-def change_user_to_webapp
-  user = Etc.getpwnam(RUN_AS_USER)
-  Process::UID.change_privilege(user.uid)
-  Process::GID.change_privilege(user.gid)
-end
-
 def run_foreman
-  change_user_to_webapp
   foreman_pid = spawn("#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1")
   Process.detach(foreman_pid)
   File.write(PIDFILE, foreman_pid.to_s)
