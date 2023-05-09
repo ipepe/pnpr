@@ -36,6 +36,10 @@ def stop_foreman
     foreman_pid = File.read(PIDFILE).to_i
     Process.kill('TERM', foreman_pid)
     FileUtils.rm_f(PIDFILE)
+    all_foreman_process_pids = `ps aux | grep foreman | grep -v grep | awk '{print $2}'`.split("\n")
+    all_foreman_process_pids.each do |foreman_process_pid|
+      Process.kill('TERM', foreman_process_pid)
+    end
     puts "Foreman stopped"
   else
     puts "Foreman is not running"
