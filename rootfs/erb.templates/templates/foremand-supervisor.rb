@@ -2,20 +2,20 @@
 
 require "erb"
 
-FILE_PATH = "/etc/init.d/foremand-server".freeze
+FILE_PATH = "/etc/init.d/foremand-supervisor".freeze
 
 RAILS_ENV = ENV.fetch("RAILS_ENV", "production")
 
 TEMPLATE = <<~ERB.freeze
   #!/bin/bash
   ### BEGIN INIT INFO
-  # Provides:          foremand-server
+  # Provides:          foremand-supervisor
   # Required-Start:    $all
   # Required-Stop:     $local_fs
   # Default-Start:     2 3 4 5
   # Default-Stop:      0 1 6
-  # Short-Description: foremand-server daemon
-  # Description:       foremand-server daemon for managing Rails applications.
+  # Short-Description: foremand-supervisor daemon
+  # Description:       foremand-supervisor daemon for managing Rails applications.
   ### END INIT INFO
   
   # Load the LSB init functions
@@ -23,13 +23,13 @@ TEMPLATE = <<~ERB.freeze
   
   case "$1" in
     start)
-      log_daemon_msg "Starting foremand-server"
-      foremand-server start
+      log_daemon_msg "Starting foremand-supervisor"
+      foremand-supervisor start
       log_end_msg $?
       ;;
     stop)
       log_daemon_msg "Stopping $APP_NAME"
-      killall foremand-server
+      killall foremand-supervisor
       ;;
     restart|force-reload)
       $0 stop

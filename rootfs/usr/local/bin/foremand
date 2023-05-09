@@ -16,5 +16,5 @@ begin
     IO.copy_stream(sock, STDOUT)
   end
 rescue Errno::ENOENT
-  puts "foremand-server is not running"
+  puts "foremand-supervisor is not running"
 end

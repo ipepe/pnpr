@@ -113,7 +113,7 @@ end
 
 
 if ARGV.empty?
-  puts "Usage: foremand-server start"
+  puts "Usage: foremand-supervisor start"
   exit 1
 elsif ARGV[0].downcase == 'start'
   daemonize

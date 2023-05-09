@@ -67,7 +67,7 @@ COPY rootfs /
 RUN chmod g+x,o+x /home/webapp &&  \
     chmod +x /docker-entrypoint.rb && \
     chmod +x /usr/local/bin/foremand && \
-    chmod +x /usr/local/bin/foremand-server && \
+    chmod +x /usr/local/bin/foremand-supervisor && \
     chmod +x /usr/local/bin/prekillsidekiq && \
     chmod 0600 /etc/logrotate.d/* && \
     rm /etc/init.d/dbus /etc/init.d/hwclock.sh /etc/init.d/procps && \
