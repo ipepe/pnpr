@@ -35,8 +35,13 @@ def kill_all_foreman_processes
   begin
     all_foreman_process_pids = `ps aux | grep foreman | grep -v grep | grep -v foremand | awk '{print $2}'`.split("\n")
     all_foreman_process_pids.each do |foreman_process_pid|
-      Process.kill('TERM', foreman_process_pid.to_i)
+      begin
+        Process.kill('TERM', foreman_process_pid.to_i)
+      rescue StandardError => e
+        nil
+      end
     end
+    puts "Killed any additional foreman processes"
   rescue StandardError => e
     nil
   end
@@ -47,8 +52,9 @@ def stop_foreman
     foreman_pid = File.read(PIDFILE).to_i
     Process.kill('TERM', foreman_pid)
     FileUtils.rm_f(PIDFILE)
-    kill_all_foreman_processes
     puts "Foreman stopped"
+    sleep 3
+    kill_all_foreman_processes
   else
     puts "Foreman is not running"
   end
