@@ -5,8 +5,7 @@
 # 2. prepare container (file permissions, etc) and start all relevant services in proper order
 # 3. reap all zombie/defunct processes
 
-# SERVICE_NAMES = [:ssh, :"redis-server", :cron, :nginx, :"passenger-exporter", :sidekiq].freeze
-SERVICE_NAMES = [:ssh, :"redis-server", :foremand].freeze
+SERVICE_NAMES = [:ssh, :"redis-server", :cron, :nginx, :"passenger-exporter", :foremand].freeze
 
 
 def log(message)
