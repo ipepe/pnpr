@@ -12,7 +12,7 @@ end
 
 begin
   Socket.unix("/var/run/foremand.sock") do |sock|
-    sock.write(ARGV[0])
+    sock.write(ARGV[0] + "\n")
     IO.copy_stream(sock, STDOUT)
   end
 rescue Errno::ENOENT
