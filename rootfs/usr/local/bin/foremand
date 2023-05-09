@@ -82,6 +82,7 @@ def foreman_status
   else
     puts "Foreman is not running"
     FileUtils.rm_f(PIDFILE) if File.exist?(PIDFILE)
+    exit 1
   end
 end
 
