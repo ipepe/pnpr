@@ -1,2 +1,6 @@
 #!/usr/bin/env ruby
 
+all_sidekiq_process_pids = `ps aux | grep sidekiq | grep -v grep | awk '{print $2}'`.split("\n")
+all_sidekiq_process_pids.each do |sidekiq_process_pid|
+  Process.kill('TSTP', sidekiq_process_pid.to_i)
+end

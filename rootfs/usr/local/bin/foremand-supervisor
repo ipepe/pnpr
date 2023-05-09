@@ -77,25 +77,10 @@ def foreman_status(io)
   end
 end
 
-def prekillsidekiq(sock)
-  begin
-    all_sidekiq_process_pids = `ps aux | grep sidekiq | grep -v grep | awk '{print $2}'`.split("\n")
-    all_sidekiq_process_pids.each do |sidekiq_process_pid|
-      Process.kill('TSTP', sidekiq_process_pid.to_i)
-    end
-  sock.write "Sidekiq processes TSTPed\n"
-  rescue StandardError => e
-    sock.write "Sidekiq processes not TSTPed\n"
-  end
-end
-
 def start_server
   thread = Thread.new do
     Socket.unix_server_loop("/var/run/foremand.sock") do |sock, client|
       puts "Client connected"
-
-
-
       begin
         case sock.readline.chomp.downcase
         when 'start'
@@ -104,8 +89,6 @@ def start_server
           stop_foreman(sock)
         when 'status'
           foreman_status(sock)
-        when 'prekillsidekiq'
-          prekillsidekiq(sock)
         else
           puts "Unknown command. Usage: formand <start|stop|status>"
         end
