@@ -2,20 +2,20 @@
 
 require "erb"
 
-FILE_PATH = "/etc/init.d/foremand".freeze
+FILE_PATH = "/etc/init.d/foremand-server".freeze
 
 RAILS_ENV = ENV.fetch("RAILS_ENV", "production")
 
 TEMPLATE = <<~ERB.freeze
   #!/bin/bash
   ### BEGIN INIT INFO
-  # Provides:          foreman
+  # Provides:          foremand-server
   # Required-Start:    $all
   # Required-Stop:     $local_fs
   # Default-Start:     2 3 4 5
   # Default-Stop:      0 1 6
-  # Short-Description: Foreman daemon
-  # Description:       Foreman daemon for managing Rails applications.
+  # Short-Description: foremand-server daemon
+  # Description:       foremand-server daemon for managing Rails applications.
   ### END INIT INFO
   
   # Load the LSB init functions
@@ -23,21 +23,13 @@ TEMPLATE = <<~ERB.freeze
   
   case "$1" in
     start)
-      log_daemon_msg "Starting foremand"
-      if [ "$(whoami)" != "webapp" ]; then
-        su -s /bin/sh -c "exec foremand start" webapp
-      else
-        foremand start
-      fi
+      log_daemon_msg "Starting foremand-server"
+      foremand-server start 2> /var/log/foremand-server.log
       log_end_msg $?
       ;;
     stop)
       log_daemon_msg "Stopping $APP_NAME"
-      if [ "$(whoami)" != "webapp" ]; then
-        su -s /bin/sh -c "exec foremand stop" webapp
-      else
-        foremand stop
-      fi
+      foremand-server stop
       ;;
     restart|force-reload)
       $0 stop
@@ -45,11 +37,7 @@ TEMPLATE = <<~ERB.freeze
       $0 start
       ;;
     status)
-      if [ "$(whoami)" != "webapp" ]; then
-        su -s /bin/sh -c "exec foremand status" webapp
-      else
-        foremand status
-      fi
+      foremand-server status
       ;;
     *)
       log_action_msg "Usage: $0 {start|stop|restart|force-reload|status}"

@@ -1,26 +1,20 @@
-#!/home/webapp/.rbenv/shims/ruby
+#!/usr/bin/env ruby
 
-require 'etc'
+require 'socket'
 
-begin
-  user = Etc.getpwnam("webapp")
-  Process::UID.change_privilege(user.uid)
-  Process::GID.change_privilege(user.gid)
-rescue => e
-  puts "Should be run as webapp user"
-  puts "Error: #{e.message}"
+if ARGV.empty?
+  puts "Usage: foremand <start|stop|status>"
+  exit 1
+elsif !['start', 'stop', 'status'].include?(command = ARGV[0].downcase)
+  puts "Unknown command. Usage: formand <start|stop|status>"
   exit 1
 end
 
-require 'bundler/inline'
-gemfile do
-  source 'https://rubygems.org'
-  gem 'daemons'
+begin
+  Socket.unix("/var/run/foremand.sock") do |sock|
+    sock.write(ARGV[0])
+    IO.copy_stream(sock, STDOUT)
+  end
+rescue Errno::ENOENT
+  puts "foremand-server is not running"
 end
-
-Dir.chdir "/home/webapp"
-
-require 'daemons'
-Daemons.run('/usr/local/bin/start_foreman.rb', {
-  dir: '/home/webapp/webapp'
-})
