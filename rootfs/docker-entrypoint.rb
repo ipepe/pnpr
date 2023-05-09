@@ -6,7 +6,7 @@
 # 3. reap all zombie/defunct processes
 
 # SERVICE_NAMES = [:ssh, :"redis-server", :cron, :nginx, :"passenger-exporter", :sidekiq].freeze
-SERVICE_NAMES = [:ssh, :"redis-server"].freeze
+SERVICE_NAMES = [:ssh, :"redis-server", :foreman].freeze
 
 
 def log(message)
@@ -40,9 +40,8 @@ SERVICE_NAMES.each do |service_name|
   logged_system_call("service #{service_name} start")
 end
 
-logged_system_call('su -s /bin/sh -c "exec foreman_daemon stop" webapp')
-logged_system_call('su -s /bin/sh -c "exec foreman_daemon start" webapp')
-logged_system_call("foreman_daemon start")
+logged_system_call("pstree")
+logged_system_call("service --status-all")
 
 log "Container prepared and services started"
 log "All services started. Waiting for interrupt..."
