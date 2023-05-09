@@ -6,7 +6,7 @@
 # 3. reap all zombie/defunct processes
 
 # SERVICE_NAMES = [:ssh, :"redis-server", :cron, :nginx, :"passenger-exporter", :sidekiq].freeze
-SERVICE_NAMES = [:ssh, :"redis-server", :foreman].freeze
+SERVICE_NAMES = [:ssh, :"redis-server", :foremand].freeze
 
 
 def log(message)
