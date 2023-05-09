@@ -24,7 +24,7 @@ TEMPLATE = <<~ERB.freeze
   case "$1" in
     start)
       log_daemon_msg "Starting foremand-supervisor"
-      foremand-supervisor start
+      foremand-supervisor start #{RAILS_ENV}
       log_end_msg $?
       ;;
     stop)

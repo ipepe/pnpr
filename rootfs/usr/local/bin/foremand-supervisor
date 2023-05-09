@@ -11,15 +11,15 @@ PIDFILE = "/var/run/foreman.pid"
 LOG_DIR = "/home/webapp/webapp/current/log"
 RUN_AS_USER = "webapp"
 DAEMON_PIDFILE = "/var/run/foreman-server.pid"
-FOREMAN_START_COMMAND = "#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1"
 
-def start_foreman(io = STDOUT)
+def start_foreman(io = STDOUT, app_env = 'production')
   return io.write "Foreman is already running\n" if process_alive?(PIDFILE)
 
   Dir.chdir APP_ROOT
   FileUtils.mkdir_p LOG_DIR
-  cmd = "sh -c \"#{FOREMAN_START_COMMAND}\" webapp"
-  foreman_pid = spawn(cmd)
+  foreman_cmd = "RAILS_ENV=#{app_env} #{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1"
+  cmd_as_webapp = "sh -c \"#{foreman_cmd}\" webapp"
+  foreman_pid = spawn(cmd_as_webapp)
   Process.detach(foreman_pid)
   File.write(PIDFILE, foreman_pid.to_s)
   io.write "Foreman started with PID: #{foreman_pid}\n"
@@ -90,7 +90,7 @@ def prekillsidekiq(sock)
   end
 end
 
-def start_server
+def start_server(app_env)
   thread = Thread.new do
     Socket.unix_server_loop("/var/run/foremand.sock") do |sock, client|
       puts "Client connected"
@@ -100,7 +100,7 @@ def start_server
       begin
         case sock.readline.chomp.downcase
         when 'start'
-          start_foreman(sock)
+          start_foreman(sock, app_env)
         when 'stop'
           stop_foreman(sock)
         when 'status'
@@ -161,9 +161,9 @@ elsif ARGV[0].downcase == 'start'
   daemonize
   write_daemon_pid_file
   setup_signal_handling
-  start_server
+  start_server(ARGV[1] || 'production')
 elsif ARGV[0].downcase == 'run'
-  start_server
+  start_server(ARGV[1] || 'production')
 else
   puts "Unknown command. Usage: formand start"
   exit 1
