@@ -14,11 +14,12 @@ DAEMON_PIDFILE = "/var/run/foreman-server.pid"
 FOREMAN_START_COMMAND = "#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1"
 
 def start_foreman(io = STDOUT)
+  return io.write "Foreman is already running\n" if process_alive?(PIDFILE)
+
   Dir.chdir APP_ROOT
   FileUtils.mkdir_p LOG_DIR
   cmd = "sh -c \"#{FOREMAN_START_COMMAND}\" webapp"
-  `#{cmd}`
-  foreman_pid = $?.pid
+  foreman_pid = spawn(cmd)
   Process.detach(foreman_pid)
   File.write(PIDFILE, foreman_pid.to_s)
   io.write "Foreman started with PID: #{foreman_pid}\n"
