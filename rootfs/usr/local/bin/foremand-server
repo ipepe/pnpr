@@ -66,6 +66,7 @@ end
 
 def start_server
   Socket.unix_server_loop("/var/run/foremand.sock") do |sock, client|
+    puts "Client connected"
     begin
       case sock.readline.chomp.downcase
       when 'start'
