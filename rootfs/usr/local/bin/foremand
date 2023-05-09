@@ -65,7 +65,7 @@ def foreman_status
 end
 
 if ARGV.empty?
-  puts "Usage: formand <start|stop|status>"
+  puts "Usage: foremand <start|stop|status>"
   exit 1
 end
 

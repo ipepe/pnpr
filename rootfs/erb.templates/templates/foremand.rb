@@ -23,7 +23,7 @@ TEMPLATE = <<~ERB.freeze
   
   case "$1" in
     start)
-      log_daemon_msg "Starting formand"
+      log_daemon_msg "Starting foremand"
       if [ whoami != "webapp" ]; then
         su -s /bin/sh -c "exec foremand start" webapp
       else
