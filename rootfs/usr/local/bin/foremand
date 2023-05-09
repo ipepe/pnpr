@@ -1,18 +1,15 @@
 #!/usr/bin/env ruby
 
-require 'fileutils'
-require 'etc'
+require 'bundler/inline'
 
-APP_ROOT = "/home/webapp/webapp/current"
-FOREMAN_BIN = "RBENV_ROOT=/home/webapp/.rbenv exec /home/webapp/.rbenv/libexec/rbenv exec foreman"
-PROCFILE = "#{APP_ROOT}/Procfile"
-PIDFILE = "/home/webapp/webapp/shared/foreman.pid"
-LOG_DIR = "/home/webapp/webapp/current/logs"
-RUN_AS_USER = "webapp"
-DAEMON_PIDFILE = "/home/webapp/webapp/foreman_daemon.pid"
-FOREMAN_START_COMMAND = "#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} -r /home/webapp/webapp/shared > #{LOG_DIR}/foreman.log 2>&1"
+gemfile do
+  source 'https://rubygems.org'
+  gem 'daemons'
+end
 
-def change_user_to_webapp
+require 'daemons'
+
+begin
   user = Etc.getpwnam(RUN_AS_USER)
   Process::UID.change_privilege(user.uid)
   Process::GID.change_privilege(user.gid)
@@ -22,89 +19,6 @@ rescue => e
   exit 1
 end
 
-def start_foreman
-  change_user_to_webapp
-  Dir.chdir APP_ROOT
-  FileUtils.mkdir_p LOG_DIR
-  pid = fork do
-    foreman_pid = spawn(FOREMAN_START_COMMAND)
-    Process.detach(foreman_pid)
-    File.write(PIDFILE, foreman_pid.to_s)
-    puts "Foreman started with PID: #{foreman_pid}"
-  end
-  Process.detach(pid)
-  sleep 3
-  exit 1 unless process_alive?(PIDFILE)
-end
+require 'daemons'
 
-def kill_all_foreman_processes
-  begin
-    all_foreman_process_pids = `ps aux | grep foreman | grep -v grep | grep -v foremand | awk '{print $2}'`.split("\n")
-    all_foreman_process_pids.each do |foreman_process_pid|
-      begin
-        Process.kill('TERM', foreman_process_pid.to_i)
-      rescue StandardError => e
-        nil
-      end
-    end
-    puts "Killed any additional foreman processes"
-  rescue StandardError => e
-    nil
-  end
-end
-
-def stop_foreman
-  if process_alive?(PIDFILE)
-    foreman_pid = File.read(PIDFILE).to_i
-    Process.kill('TERM', foreman_pid)
-    FileUtils.rm_f(PIDFILE)
-    puts "Foreman stopped"
-    sleep 3
-    kill_all_foreman_processes
-  else
-    puts "Foreman is not running"
-  end
-end
-
-def process_alive?(pidfile)
-  return false unless File.exist?(pidfile)
-
-  pid = File.read(pidfile).to_i
-  begin
-    Process.kill(0, pid)
-    return true
-  rescue Errno::ESRCH
-    return false
-  rescue Errno::EPERM
-    return true
-  end
-end
-
-def foreman_status
-  if process_alive?(PIDFILE)
-    foreman_pid = File.read(PIDFILE).to_i
-    puts "Foreman is running with PID: #{foreman_pid}"
-  else
-    puts "Foreman is not running"
-    FileUtils.rm_f(PIDFILE) if File.exist?(PIDFILE)
-    exit 1
-  end
-end
-
-change_user_to_webapp
-
-if ARGV.empty?
-  puts "Usage: foremand <start|stop|status>"
-  exit 1
-end
-
-case ARGV[0].downcase
-when 'start'
-  start_foreman
-when 'stop'
-  stop_foreman
-when 'status'
-  foreman_status
-else
-  puts "Unknown command. Usage: formand <start|stop|status>"
-end
+Daemons.run('start_foreman.rb')
