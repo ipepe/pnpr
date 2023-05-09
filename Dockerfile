@@ -45,6 +45,7 @@ RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
     /home/webapp/.rbenv/bin/rbenv global ${RUBY_VERSION} && \
     /home/webapp/.rbenv/shims/gem install bundler:1.17.3 && \
     /home/webapp/.rbenv/shims/gem install foreman && \
+    /home/webapp/.rbenv/shims/gem install daemons && \
     /home/webapp/.rbenv/bin/rbenv rehash
 
 USER root
