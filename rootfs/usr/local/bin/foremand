@@ -66,6 +66,8 @@ def foreman_status
   end
 end
 
+change_user_to_webapp
+
 if ARGV.empty?
   puts "Usage: foremand <start|stop|status>"
   exit 1
@@ -79,5 +81,5 @@ when 'stop'
 when 'status'
   foreman_status
 else
-  puts "Unknown command. Usage: ./daemonize.rb <start|stop|status>"
+  puts "Unknown command. Usage: formand <start|stop|status>"
 end
