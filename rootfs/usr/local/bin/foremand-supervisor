@@ -18,8 +18,7 @@ def start_foreman(io = STDOUT)
 
   Dir.chdir APP_ROOT
   FileUtils.mkdir_p LOG_DIR
-  cmd = "sh -c \"#{FOREMAN_START_COMMAND}\" webapp"
-  foreman_pid = spawn(cmd)
+  foreman_pid = spawn("gosu webapp #{FOREMAN_START_COMMAND}")
   Process.detach(foreman_pid)
   File.write(PIDFILE, foreman_pid.to_s)
   io.write "Foreman started with PID: #{foreman_pid}\n"
