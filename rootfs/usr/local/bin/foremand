@@ -26,12 +26,13 @@ def start_foreman
   change_user_to_webapp
   Dir.chdir APP_ROOT
   FileUtils.mkdir_p LOG_DIR
-  fork do
+  pid = fork do
     foreman_pid = spawn(FOREMAN_START_COMMAND)
     Process.detach(foreman_pid)
     File.write(PIDFILE, foreman_pid.to_s)
     puts "Foreman started with PID: #{foreman_pid}"
   end
+  Process.detach(pid)
   sleep 3
   exit 1 unless process_alive?(PIDFILE)
 end
