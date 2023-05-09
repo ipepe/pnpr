@@ -4,13 +4,13 @@ require 'fileutils'
 require 'etc'
 
 APP_ROOT = "/home/webapp/webapp/current"
-FOREMAN_BIN = "RBENV_ROOT=/home/webapp/.rbenv exec /home/webapp/.rbenv/libexec/rbenv exec foreman"
+FOREMAN_BIN = "/home/webapp/.rbenv/shims/foreman"
 PROCFILE = "#{APP_ROOT}/Procfile"
 PIDFILE = "/home/webapp/webapp/shared/foreman.pid"
 LOG_DIR = "/home/webapp/webapp/current/logs"
 RUN_AS_USER = "webapp"
 DAEMON_PIDFILE = "/home/webapp/webapp/foreman_daemon.pid"
-FOREMAN_START_COMMAND = "#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1"
+FOREMAN_START_COMMAND = "#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} -r /home/webapp/webapp/shared > #{LOG_DIR}/foreman.log 2>&1"
 
 def change_user_to_webapp
   user = Etc.getpwnam(RUN_AS_USER)
@@ -28,7 +28,7 @@ def start_foreman
   FileUtils.mkdir_p LOG_DIR
   foreman_pid = spawn(FOREMAN_START_COMMAND)
   Process.detach(foreman_pid)
-  File.write(PIDFILE, foreman_pid.to_s)
+  foreman_pid = File.read(PIDFILE) || foreman_pid
   puts "Foreman started with PID: #{foreman_pid}"
   sleep 1
   exit 1 unless process_alive?(PIDFILE)
