@@ -83,7 +83,7 @@ def start_server
       puts "Sock close"
       sock.close
       client.disconnect
-      puts "Client disconnected
+      puts "Client disconnected"
     end
   end
 end
