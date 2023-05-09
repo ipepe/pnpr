@@ -19,4 +19,6 @@ gemfile do
 end
 
 require 'daemons'
-Daemons.run('start_foreman.rb')
+Daemons.run('start_foreman.rb', {
+  dir: '/home/webapp/webapp'
+})
