@@ -20,8 +20,6 @@ def start_foreman
   Process.detach(foreman_pid)
   File.write(PIDFILE, foreman_pid.to_s)
   puts "Foreman started with PID: #{foreman_pid}"
-  sleep 1
-  exit 1 unless process_alive?(PIDFILE)
 end
 
 def process_alive?(pidfile)
@@ -74,7 +72,6 @@ def foreman_status(io)
   else
     io.write "Foreman is not running"
     FileUtils.rm_f(PIDFILE) if File.exist?(PIDFILE)
-    exit 1
   end
 end
 
