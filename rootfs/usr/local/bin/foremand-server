@@ -99,14 +99,15 @@ end
 if ARGV.empty?
   puts "Usage: foremand-server start"
   exit 1
-elsif ARGV[0].downcase != 'start'
+elsif ARGV[0].downcase == 'start'
+  daemonize
+  start_server
+elsif ARGV[0].downcase == 'run'
+  start_server
+else
   puts "Unknown command. Usage: formand start"
   exit 1
 end
-
-daemonize
-start_server
-
 
 def run_foreman
   foreman_pid = spawn("#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1")
