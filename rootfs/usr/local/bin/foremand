@@ -30,6 +30,8 @@ def start_foreman
   Process.detach(foreman_pid)
   File.write(PIDFILE, foreman_pid.to_s)
   puts "Foreman started with PID: #{foreman_pid}"
+  sleep 1
+  exit 1 unless process_alive?(PIDFILE)
 end
 
 def kill_all_foreman_processes
