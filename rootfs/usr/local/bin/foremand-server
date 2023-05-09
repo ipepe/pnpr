@@ -24,6 +24,20 @@ def start_foreman
   exit 1 unless process_alive?(PIDFILE)
 end
 
+def process_alive?(pidfile)
+  return false unless File.exist?(pidfile)
+
+  pid = File.read(pidfile).to_i
+  begin
+    Process.kill(0, pid)
+    return true
+  rescue Errno::ESRCH
+    return false
+  rescue Errno::EPERM
+    return true
+  end
+end
+
 def kill_all_foreman_processes
   begin
     all_foreman_process_pids = `ps aux | grep foreman | grep -v grep | grep -v foremand | awk '{print $2}'`.split("\n")
@@ -99,6 +113,8 @@ def daemonize
 end
 
 
+
+
 if ARGV.empty?
   puts "Usage: foremand-server start"
   exit 1
@@ -111,6 +127,13 @@ else
   puts "Unknown command. Usage: formand start"
   exit 1
 end
+
+
+
+
+
+
+
 
 def run_foreman
   foreman_pid = spawn("#{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1")
@@ -137,19 +160,7 @@ def setup_signal_handling
   end
 end
 
-def process_alive?(pidfile)
-  return false unless File.exist?(pidfile)
 
-  pid = File.read(pidfile).to_i
-  begin
-    Process.kill(0, pid)
-    return true
-  rescue Errno::ESRCH
-    return false
-  rescue Errno::EPERM
-    return true
-  end
-end
 
 def start_daemon
   if process_alive?(DAEMON_PIDFILE)
