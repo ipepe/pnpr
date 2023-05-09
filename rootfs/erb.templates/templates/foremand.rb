@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/home/webapp/.rbenv/shims/ruby
 
 require "erb"
 
