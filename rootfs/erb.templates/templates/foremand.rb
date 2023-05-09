@@ -24,7 +24,7 @@ TEMPLATE = <<~ERB.freeze
   case "$1" in
     start)
       log_daemon_msg "Starting foremand"
-      if [ whoami != "webapp" ]; then
+      if [ "$(whoami)" != "webapp" ]; then
         su -s /bin/sh -c "exec foremand start" webapp
       else
         foremand start
@@ -33,7 +33,7 @@ TEMPLATE = <<~ERB.freeze
       ;;
     stop)
       log_daemon_msg "Stopping $APP_NAME"
-      if [ whoami != "webapp" ]; then
+      if [ "$(whoami)" != "webapp" ]; then
         su -s /bin/sh -c "exec foremand stop" webapp
       else
         foremand stop
@@ -45,7 +45,7 @@ TEMPLATE = <<~ERB.freeze
       $0 start
       ;;
     status)
-      if [ whoami != "webapp" ]; then
+      if [ "$(whoami)" != "webapp" ]; then
         su -s /bin/sh -c "exec foremand status" webapp
       else
         foremand status
