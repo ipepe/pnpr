@@ -78,9 +78,12 @@ def start_server
       else
         puts "Unknown command. Usage: formand <start|stop|status>"
       end
+      sock.flush
     ensure
+      puts "Sock close"
       sock.close
       client.disconnect
+      puts "Client disconnected
     end
   end
 end
