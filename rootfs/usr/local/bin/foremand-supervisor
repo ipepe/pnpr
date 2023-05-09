@@ -54,16 +54,16 @@ def kill_all_foreman_processes
   end
 end
 
-def stop_foreman
+def stop_foreman(io)
   if process_alive?(PIDFILE)
     foreman_pid = File.read(PIDFILE).to_i
     Process.kill('TERM', foreman_pid)
     FileUtils.rm_f(PIDFILE)
-    puts "Foreman stopped"
+    io.write "Foreman stopped\n"
     sleep 3
     kill_all_foreman_processes
   else
-    puts "Foreman is not running"
+    io.write "Foreman is not running\n"
   end
 end
 
