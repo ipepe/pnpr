@@ -1,9 +1,24 @@
 #!/usr/bin/env ruby
 
 # this script has 3 purposes:
-# 1. prepare container (file permissions, etc) and start all relevant services in proper order
-# 2. when receiving interrupt, forward this interrupt to all child processes
+# 1. when receiving interrupt, forward this interrupt to all child processes
+# 2. prepare container (file permissions, etc) and start all relevant services in proper order
 # 3. reap all zombie/defunct processes
+
+WITHOUT_SERVICE_NAMES = ENV[
+  "WITHOUT_SERVICE_NAMES"
+].to_s.split(",").map(&:strip)
+DEFAULT_SERVICE_NAMES = [
+  "ssh",
+  "redis-server",
+  "cron",
+  "nginx",
+  "passenger-exporter",
+  "foremand-supervisor"
+]
+SERVICE_NAMES = (
+  DEFAULT_SERVICE_NAMES - WITHOUT_SERVICE_NAMES
+).map(&:to_sym).freeze
 
 def log(message)
   puts($PROGRAM_NAME = "[PNPR] #{message}")
@@ -13,18 +28,6 @@ def logged_system_call(command)
   log("Executing: #{command}")
   system(command)
 end
-
-# ==== PREPARE CONTAINER AND START SERVICES ====
-SERVICE_NAMES = [:ssh, :"redis-server", :cron, :nginx, :"passenger-exporter", :sidekiq].freeze
-
-logged_system_call("bash /bootstrap.sh")
-logged_system_call('chown -R webapp:webapp "/home/webapp" &')
-
-SERVICE_NAMES.each do |service_name|
-  logged_system_call("service #{service_name} start")
-end
-
-log "All services started. Waiting for interrupt..."
 
 # ==== RECEIVE AND FORWARD INTERRUPT SIGNALS TO CHILD PROCESSES ====
 [:INT, :QUIT, :TERM].each do |signal|
@@ -38,6 +41,23 @@ log "All services started. Waiting for interrupt..."
     exit(Signal.list[signal.to_s])
   end
 end
+
+# ==== PREPARE CONTAINER AND START SERVICES ====
+logged_system_call("bash /erb.templates/render.sh")
+logged_system_call("bash /bootstrap.sh")
+logged_system_call('chown -R webapp:webapp "/home/webapp" &')
+
+SERVICE_NAMES.each do |service_name|
+  logged_system_call("service #{service_name} start")
+end
+
+logged_system_call("foremand start")
+
+logged_system_call("service --status-all")
+logged_system_call("pstree")
+
+log "Container prepared and services started"
+log "All services started. Waiting for interrupt..."
 
 # ==== REAP ALL ZOMBIE AND DEFUNCT SERVICES ====
 Process.waitall

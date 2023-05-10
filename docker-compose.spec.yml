@@ -10,6 +10,7 @@ services:
         - NODE_MAJOR_VERSION=10
     environment:
       POSTGRES_PASSWORD: Password1
+      RAILS_ENV: 'staging'
     ports:
       - "1022:22"
       - "1080:80"

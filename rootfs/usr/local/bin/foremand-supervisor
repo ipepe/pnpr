@@ -1,0 +1,170 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+require 'etc'
+require 'socket'
+
+APP_ROOT = "/home/webapp/webapp/current"
+FOREMAN_BIN = "RBENV_ROOT=/home/webapp/.rbenv exec /home/webapp/.rbenv/libexec/rbenv exec foreman"
+PROCFILE = "#{APP_ROOT}/Procfile"
+PIDFILE = "/var/run/foreman.pid"
+LOG_DIR = "/home/webapp/webapp/current/log"
+RUN_AS_USER = "webapp"
+DAEMON_PIDFILE = "/var/run/foreman-server.pid"
+
+def start_foreman(io = STDOUT, app_env = 'production')
+  return io.write "Foreman is already running\n" if process_alive?(PIDFILE)
+
+  Dir.chdir APP_ROOT
+  FileUtils.mkdir_p LOG_DIR
+  foreman_cmd = "RAILS_ENV=#{app_env} #{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1"
+  cmd_as_webapp = "sh -c \"#{foreman_cmd}\" webapp"
+  foreman_pid = spawn(cmd_as_webapp)
+  Process.detach(foreman_pid)
+  File.write(PIDFILE, foreman_pid.to_s)
+  io.write "Foreman started with PID: #{foreman_pid}\n"
+end
+
+def process_alive?(pidfile)
+  return false unless File.exist?(pidfile)
+
+  pid = File.read(pidfile).to_i
+  begin
+    Process.kill(0, pid)
+    return true
+  rescue Errno::ESRCH
+    return false
+  rescue Errno::EPERM
+    return true
+  end
+end
+
+def kill_all_foreman_processes
+  begin
+    all_foreman_process_pids = `ps aux | grep foreman | grep -v grep | grep -v foremand | awk '{print $2}'`.split("\n")
+    all_foreman_process_pids.each do |foreman_process_pid|
+      begin
+        Process.kill('TERM', foreman_process_pid.to_i)
+      rescue StandardError => e
+        nil
+      end
+    end
+    puts "Killed any additional foreman processes"
+  rescue StandardError => e
+    nil
+  end
+end
+
+def stop_foreman(io)
+  if process_alive?(PIDFILE)
+    foreman_pid = File.read(PIDFILE).to_i
+    Process.kill('TERM', foreman_pid)
+    FileUtils.rm_f(PIDFILE)
+    io.write "Foreman stopped\n"
+    sleep 3
+    kill_all_foreman_processes
+  else
+    io.write "Foreman is not running\n"
+  end
+end
+
+def foreman_status(io)
+  if process_alive?(PIDFILE)
+    foreman_pid = File.read(PIDFILE).to_i
+    io.write "Foreman is running with PID: #{foreman_pid}\n"
+  else
+    io.write "Foreman is not running\n"
+    FileUtils.rm_f(PIDFILE) if File.exist?(PIDFILE)
+  end
+end
+
+def prekillsidekiq(sock)
+  begin
+    all_sidekiq_process_pids = `ps aux | grep sidekiq | grep -v grep | awk '{print $2}'`.split("\n")
+    all_sidekiq_process_pids.each do |sidekiq_process_pid|
+      Process.kill('TSTP', sidekiq_process_pid.to_i)
+    end
+  sock.write "Sidekiq processes TSTPed\n"
+  rescue StandardError => e
+    sock.write "Sidekiq processes not TSTPed\n"
+  end
+end
+
+def start_server(app_env)
+  thread = Thread.new do
+    Socket.unix_server_loop("/var/run/foremand.sock") do |sock, client|
+      puts "Client connected"
+
+
+
+      begin
+        case sock.readline.chomp.downcase
+        when 'start'
+          start_foreman(sock, app_env)
+        when 'stop'
+          stop_foreman(sock)
+        when 'status'
+          foreman_status(sock)
+        when 'prekillsidekiq'
+          prekillsidekiq(sock)
+        else
+          puts "Unknown command. Usage: formand <start|stop|status>"
+        end
+        sock.flush
+      ensure
+        puts "Sock close"
+        sock.close
+      end
+    end
+  end
+  sleep 1
+  FileUtils.chmod(0777, "/var/run/foremand.sock")
+  thread.join
+end
+
+def daemonize
+  exit if fork
+  Process.setsid
+  exit if fork
+  Dir.chdir '/'
+  File.umask 0000
+
+  STDIN.reopen '/dev/null'
+  STDOUT.reopen '/dev/null', 'a'
+  STDERR.reopen STDOUT
+end
+
+def write_daemon_pid_file
+  File.write(DAEMON_PIDFILE, Process.pid.to_s)
+end
+
+def setup_signal_handling
+  [:INT, :QUIT, :TERM].each do |signal|
+    Signal.trap(signal) do
+      if File.exist?(PIDFILE)
+        foreman_pid = File.read(PIDFILE).to_i
+        Process.kill(signal, foreman_pid)
+        FileUtils.rm_f(PIDFILE)
+      end
+      FileUtils.rm_f(DAEMON_PIDFILE)
+      puts "Daemon terminated by #{signal}"
+      exit
+    end
+  end
+end
+
+
+if ARGV.empty?
+  puts "Usage: foremand-supervisor start"
+  exit 1
+elsif ARGV[0].downcase == 'start'
+  daemonize
+  write_daemon_pid_file
+  setup_signal_handling
+  start_server(ARGV[1] || 'production')
+elsif ARGV[0].downcase == 'run'
+  start_server(ARGV[1] || 'production')
+else
+  puts "Unknown command. Usage: formand start"
+  exit 1
+end

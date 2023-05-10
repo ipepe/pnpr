@@ -41,9 +41,10 @@ RUN git clone https://github.com/sstephenson/rbenv.git /home/webapp/.rbenv && \
     echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:\$PATH" >> /home/webapp/.bashrc && \
     echo "export RBENV_ROOT=/home/webapp/.rbenv" >> /home/webapp/.bashrc && \
     echo "gem: --no-rdoc --no-ri" > /home/webapp/.gemrc
-RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION}
-RUN /home/webapp/.rbenv/bin/rbenv global ${RUBY_VERSION} && \
+RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
+    /home/webapp/.rbenv/bin/rbenv global ${RUBY_VERSION} && \
     /home/webapp/.rbenv/shims/gem install bundler:1.17.3 && \
+    /home/webapp/.rbenv/shims/gem install foreman && \
     /home/webapp/.rbenv/bin/rbenv rehash
 
 USER root
@@ -65,6 +66,9 @@ COPY rootfs /
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
 RUN chmod g+x,o+x /home/webapp &&  \
     chmod +x /docker-entrypoint.rb && \
+    chmod +x /usr/local/bin/foremand && \
+    chmod +x /usr/local/bin/foremand-supervisor && \
+    chmod +x /usr/local/bin/prekillsidekiq && \
     chmod 0600 /etc/logrotate.d/* && \
     rm /etc/init.d/dbus /etc/init.d/hwclock.sh /etc/init.d/procps && \
     (crontab -l; echo "33 3 * * * /usr/sbin/logrotate /etc/logrotate.d/*") | crontab -
@@ -73,18 +77,16 @@ ARG RAILS_ENV=production
 ARG NODE_ENV=production
 ARG FRIENDLY_ERROR_PAGES=off
 
-RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /etc/environment && \
-    echo "NODE_VERSION=${NODE_VERSION}" >> /etc/environment && \
-    echo "RAILS_ENV=${RAILS_ENV}" >> /etc/environment && \
-    echo "NODE_ENV=${NODE_ENV}" >> /etc/environment && \
-    echo "FRIENDLY_ERROR_PAGES=${FRIENDLY_ERROR_PAGES}" >> /etc/environment
+RUN echo "RUBY_VERSION=${RUBY_VERSION}" >> /erb.templates/templates/etc-environment.rb && \
+    echo "NODE_MAJOR_VERSION=${NODE_MAJOR_VERSION}" >> /erb.templates/templates/etc-environment.rb && \
+    echo "RAILS_ENV=${RAILS_ENV}" >> /erb.templates/templates/etc-environment.rb && \
+    echo "NODE_ENV=${NODE_ENV}" >> /erb.templates/templates/etc-environment.rb && \
+    echo "FRIENDLY_ERROR_PAGES=${FRIENDLY_ERROR_PAGES}" >> /erb.templates/templates/etc-environment.rb
 
-# setup nginx
-RUN sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -e "s/\${FRIENDLY_ERROR_PAGES}/${FRIENDLY_ERROR_PAGES}/" -i /etc/nginx/sites-enabled/default && \
-    sed -e "s/\${RAILS_ENV}/${RAILS_ENV}/" -i /etc/init.d/sidekiq
-RUN nginx -t
+RUN nginx -t && bash /erb.templates/render.sh && nginx -t
 
 HEALTHCHECK --interval=5s --timeout=3s --start-period=30s --retries=3 CMD curl -f http://localhost/healtcheck || exit 1
 VOLUME "/home/webapp/.ssh"
+VOLUME "/home/webapp/webapp"
 EXPOSE 22 80 9149 8080 8081 8082
 CMD ["/docker-entrypoint.rb"]
