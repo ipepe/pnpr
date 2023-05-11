@@ -1,14 +1,14 @@
 version: '3.2'
 services:
   server:
-    image: ipepe/pnpr:v3-u2004-r2.3.1-n10-staging
+    image: ipepe/pnpr:v3.2-u20.04-r2.3.1-n10
     restart: always
     network_mode: bridge
     healthcheck:
       disable: true
     environment:
-      POSTGRES_PASSWORD: 'Password1'
-      RAILS_ENV: 'staging'
+      PGPASSWORD: Password1
+      RAILS_ENV: staging
       FRIENDLY_ERROR_PAGES: 'on'
     links:
       - postgres_db
@@ -29,7 +29,7 @@ services:
 
   postgres_db:
     network_mode: bridge
-    image: postgres:10
+    image: postgres:15
     restart: always
     environment:
       POSTGRES_DB: webapp
