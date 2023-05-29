@@ -17,7 +17,7 @@ def start_foreman(io = STDOUT, app_env = 'production')
 
   Dir.chdir APP_ROOT
   FileUtils.mkdir_p LOG_DIR
-  foreman_cmd = "RAILS_ENV=#{app_env} #{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} > #{LOG_DIR}/foreman.log 2>&1"
+  foreman_cmd = "RAILS_ENV=#{app_env} #{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} -e #{APP_ROOT}/.env.#{app_env} > #{LOG_DIR}/foreman.log 2>&1"
   cmd_as_webapp = "sh -c \"#{foreman_cmd}\" webapp"
   foreman_pid = spawn(cmd_as_webapp)
   Process.detach(foreman_pid)
