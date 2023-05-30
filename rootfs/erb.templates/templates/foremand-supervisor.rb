@@ -5,6 +5,8 @@ require "erb"
 FILE_PATH = "/etc/init.d/foremand-supervisor".freeze
 
 RAILS_ENV = ENV.fetch("RAILS_ENV", "production")
+WITH_AUTORESTART = ENV.fetch("FOREMAND_AUTO_RESTART", "true") == "true"
+AUTO_RESTART_OPTION = "--with-autorestart"
 
 TEMPLATE = <<~ERB.freeze
   #!/bin/bash
@@ -24,7 +26,7 @@ TEMPLATE = <<~ERB.freeze
   case "$1" in
     start)
       log_daemon_msg "Starting foremand-supervisor"
-      foremand-supervisor start #{RAILS_ENV}
+      foremand-supervisor start #{RAILS_ENV} #{AUTO_RESTART_OPTION if WITH_AUTORESTART}
       log_end_msg $?
       ;;
     stop)

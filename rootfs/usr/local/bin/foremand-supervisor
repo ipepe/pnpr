@@ -90,12 +90,10 @@ def prekillsidekiq(sock)
   end
 end
 
-def start_server(app_env)
+def start_server(app_env, with_autorestart)
   thread = Thread.new do
     Socket.unix_server_loop("/var/run/foremand.sock") do |sock, client|
       puts "Client connected"
-
-
 
       begin
         case sock.readline.chomp.downcase
@@ -119,6 +117,15 @@ def start_server(app_env)
   end
   sleep 1
   FileUtils.chmod(0777, "/var/run/foremand.sock")
+  if with_autorestart
+    loop do
+      unless process_alive?(PIDFILE)
+        STDOUT.puts "Foreman is not running. Starting..."
+        start_foreman(STDOUT, app_env)
+      end
+      sleep 5
+    end
+  end
   thread.join
 end
 
@@ -161,9 +168,9 @@ elsif ARGV[0].downcase == 'start'
   daemonize
   write_daemon_pid_file
   setup_signal_handling
-  start_server(ARGV[1] || 'production')
+  start_server(ARGV[1] || 'production', ARGV.include?('--with-autorestart'))
 elsif ARGV[0].downcase == 'run'
-  start_server(ARGV[1] || 'production')
+  start_server(ARGV[1] || 'production', ARGV.include?('--with-autorestart'))
 else
   puts "Unknown command. Usage: formand start"
   exit 1
