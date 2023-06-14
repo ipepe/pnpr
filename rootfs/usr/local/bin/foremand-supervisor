@@ -1,23 +1,24 @@
 #!/usr/bin/env ruby
 
-require 'fileutils'
-require 'etc'
-require 'socket'
+require "fileutils"
+require "etc"
+require "socket"
 
-APP_ROOT = "/home/webapp/webapp/current"
-FOREMAN_BIN = "RBENV_ROOT=/home/webapp/.rbenv exec /home/webapp/.rbenv/libexec/rbenv exec foreman"
-PROCFILE = "#{APP_ROOT}/Procfile"
-PIDFILE = "/var/run/foreman.pid"
-LOG_DIR = "/home/webapp/webapp/current/log"
-RUN_AS_USER = "webapp"
-DAEMON_PIDFILE = "/var/run/foreman-server.pid"
+APP_ROOT = "/home/webapp/webapp/current".freeze
+FOREMAN_BIN = "RBENV_ROOT=/home/webapp/.rbenv exec /home/webapp/.rbenv/libexec/rbenv exec foreman".freeze
+PROCFILE = "#{APP_ROOT}/Procfile".freeze
+PIDFILE = "/var/run/foreman.pid".freeze
+LOG_DIR = "/home/webapp/webapp/current/log".freeze
+RUN_AS_USER = "webapp".freeze
+DAEMON_PIDFILE = "/var/run/foreman-server.pid".freeze
+MALLOC_ENV = 'MALLOC_ARENA_MAX=2' unless ENV.fetch('WITHOUT_MALLOC_ARENA_MAX', false)
 
-def start_foreman(io = STDOUT, app_env = 'production')
+def start_foreman(io = $stdout, app_env = "production")
   return io.write "Foreman is already running\n" if process_alive?(PIDFILE)
 
   Dir.chdir APP_ROOT
   FileUtils.mkdir_p LOG_DIR
-  foreman_cmd = "RAILS_ENV=#{app_env} #{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} -e #{APP_ROOT}/.env.#{app_env} > #{LOG_DIR}/foreman.log 2>&1"
+  foreman_cmd = "RAILS_ENV=#{app_env} #{MALLOC_ENV} #{FOREMAN_BIN} start -f #{PROCFILE} -d #{APP_ROOT} -e #{APP_ROOT}/.env.#{app_env} > #{LOG_DIR}/foreman.log 2>&1"
   cmd_as_webapp = "sh -c \"#{foreman_cmd}\" webapp"
   foreman_pid = spawn(cmd_as_webapp)
   Process.detach(foreman_pid)
@@ -31,34 +32,32 @@ def process_alive?(pidfile)
   pid = File.read(pidfile).to_i
   begin
     Process.kill(0, pid)
-    return true
+    true
   rescue Errno::ESRCH
-    return false
+    false
   rescue Errno::EPERM
-    return true
+    true
   end
 end
 
 def kill_all_foreman_processes
-  begin
-    all_foreman_process_pids = `ps aux | grep foreman | grep -v grep | grep -v foremand | awk '{print $2}'`.split("\n")
-    all_foreman_process_pids.each do |foreman_process_pid|
-      begin
-        Process.kill('TERM', foreman_process_pid.to_i)
-      rescue StandardError => e
-        nil
-      end
+  all_foreman_process_pids = `ps aux | grep foreman | grep -v grep | grep -v foremand | awk '{print $2}'`.split("\n")
+  all_foreman_process_pids.each do |foreman_process_pid|
+    begin
+      Process.kill("TERM", foreman_process_pid.to_i)
+    rescue StandardError => e
+      nil
     end
-    puts "Killed any additional foreman processes"
-  rescue StandardError => e
-    nil
   end
+  puts "Killed any additional foreman processes"
+rescue StandardError => e
+  nil
 end
 
 def stop_foreman(io)
   if process_alive?(PIDFILE)
     foreman_pid = File.read(PIDFILE).to_i
-    Process.kill('TERM', foreman_pid)
+    Process.kill("TERM", foreman_pid)
     FileUtils.rm_f(PIDFILE)
     io.write "Foreman stopped\n"
     sleep 3
@@ -74,38 +73,34 @@ def foreman_status(io)
     io.write "Foreman is running with PID: #{foreman_pid}\n"
   else
     io.write "Foreman is not running\n"
-    FileUtils.rm_f(PIDFILE) if File.exist?(PIDFILE)
+    FileUtils.rm_f(PIDFILE)
   end
 end
 
 def prekillsidekiq(sock)
-  begin
-    all_sidekiq_process_pids = `ps aux | grep sidekiq | grep -v grep | awk '{print $2}'`.split("\n")
-    all_sidekiq_process_pids.each do |sidekiq_process_pid|
-      Process.kill('TSTP', sidekiq_process_pid.to_i)
-    end
-  sock.write "Sidekiq processes TSTPed\n"
-  rescue StandardError => e
-    sock.write "Sidekiq processes not TSTPed\n"
+  all_sidekiq_process_pids = `ps aux | grep sidekiq | grep -v grep | awk '{print $2}'`.split("\n")
+  all_sidekiq_process_pids.each do |sidekiq_process_pid|
+    Process.kill("TSTP", sidekiq_process_pid.to_i)
   end
+  sock.write "Sidekiq processes TSTPed\n"
+rescue StandardError => e
+  sock.write "Sidekiq processes not TSTPed\n"
 end
 
 def start_server(app_env)
   thread = Thread.new do
-    Socket.unix_server_loop("/var/run/foremand.sock") do |sock, client|
+    Socket.unix_server_loop("/var/run/foremand.sock") do |sock, _client|
       puts "Client connected"
-
-
 
       begin
         case sock.readline.chomp.downcase
-        when 'start'
+        when "start"
           start_foreman(sock, app_env)
-        when 'stop'
+        when "stop"
           stop_foreman(sock)
-        when 'status'
+        when "status"
           foreman_status(sock)
-        when 'prekillsidekiq'
+        when "prekillsidekiq"
           prekillsidekiq(sock)
         else
           puts "Unknown command. Usage: formand <start|stop|status>"
@@ -118,7 +113,7 @@ def start_server(app_env)
     end
   end
   sleep 1
-  FileUtils.chmod(0777, "/var/run/foremand.sock")
+  FileUtils.chmod(0o777, "/var/run/foremand.sock")
   thread.join
 end
 
@@ -126,12 +121,12 @@ def daemonize
   exit if fork
   Process.setsid
   exit if fork
-  Dir.chdir '/'
-  File.umask 0000
+  Dir.chdir "/"
+  File.umask 0o000
 
-  STDIN.reopen '/dev/null'
-  STDOUT.reopen '/dev/null', 'a'
-  STDERR.reopen STDOUT
+  $stdin.reopen "/dev/null"
+  $stdout.reopen "/dev/null", "a"
+  $stderr.reopen $stdout
 end
 
 def write_daemon_pid_file
@@ -153,17 +148,16 @@ def setup_signal_handling
   end
 end
 
-
 if ARGV.empty?
   puts "Usage: foremand-supervisor start"
   exit 1
-elsif ARGV[0].downcase == 'start'
+elsif ARGV[0].downcase == "start"
   daemonize
   write_daemon_pid_file
   setup_signal_handling
-  start_server(ARGV[1] || 'production')
-elsif ARGV[0].downcase == 'run'
-  start_server(ARGV[1] || 'production')
+  start_server(ARGV[1] || "production")
+elsif ARGV[0].downcase == "run"
+  start_server(ARGV[1] || "production")
 else
   puts "Unknown command. Usage: formand start"
   exit 1

@@ -7,7 +7,7 @@ NODE_VERSIONS = ["10"].freeze
 
 NODE_VERSIONS.each do |node_version|
   RUBY_VERSIONS.each do |ruby_version|
-    image_tag = "dev-v3.3-u20.04-r#{ruby_version}-n#{node_version}"
+    image_tag = "dev-u20.04-r#{ruby_version}-n#{node_version}"
     image_name = "ipepe/pnpr:#{image_tag}"
     env_level = "production"
     friendly_error_pages =
