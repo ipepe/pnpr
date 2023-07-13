@@ -1,6 +1,9 @@
 # pnpr
 Run Your passenger nginx postgres ruby the simple way
 
+<a href="https://hub.docker.com/r/ipepe/pnpr/tags"><img src="https://img.shields.io/docker/pulls/ipepe/pnpr"></a>
+
+
 ## Image naming meaing
 
 `v3.3-u20.04-r2.3.1-n10` means:
