@@ -3,6 +3,10 @@ Run Your passenger nginx postgres ruby the simple way
 
 <a href="https://hub.docker.com/r/ipepe/pnpr/tags"><img src="https://img.shields.io/docker/pulls/ipepe/pnpr"></a>
 
+## Changelog
+ * 3.3
+   * 3.3.1 - Change docker-entrypoint.rb to docker-entrypoint.sh  
+
 
 ## Image naming meaing
 
