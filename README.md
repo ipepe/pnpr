@@ -5,7 +5,7 @@ Run Your passenger nginx postgres ruby the simple way
 
 ## Changelog
  * 3.3
-   * 3.3.1 - Change docker-entrypoint.rb to docker-entrypoint.sh  
+   * 3.3.1 - Change docker-entrypoint.rb to docker-entrypoint.sh to lower memory usage
 
 
 ## Image naming meaing
