@@ -65,7 +65,7 @@ COPY rootfs /
 # setup logrotate
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
 RUN chmod g+x,o+x /home/webapp &&  \
-    chmod +x /docker-entrypoint.rb && \
+    chmod +x /docker-entrypoint.sh && \
     chmod +x /usr/local/bin/foremand && \
     chmod +x /usr/local/bin/foremand-supervisor && \
     chmod +x /usr/local/bin/prekillsidekiq && \
@@ -89,4 +89,4 @@ HEALTHCHECK --interval=5s --timeout=3s --start-period=30s --retries=3 CMD curl -
 VOLUME "/home/webapp/.ssh"
 VOLUME "/home/webapp/webapp"
 EXPOSE 22 80 9149 8080 8081 8082
-CMD ["/docker-entrypoint.rb"]
+CMD ["/docker-entrypoint.sh"]
