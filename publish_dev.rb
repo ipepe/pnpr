@@ -19,4 +19,3 @@
   puts "Pushing #{image_name}"
   `docker push "#{image_name}"`
 end
-end
