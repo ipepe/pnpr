@@ -50,5 +50,4 @@ log "Container prepared and services started"
 log "All services started. Waiting for interrupt..."
 
 # ==== REAP ALL ZOMBIE AND DEFUNCT SERVICES ====
-wait
-exit 1
+tail --pid=$$ -f /dev/null
