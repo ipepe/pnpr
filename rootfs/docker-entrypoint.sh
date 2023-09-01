@@ -6,12 +6,12 @@ trap 'for i in "${SERVICE_NAMES[@]}"; do log "Stopping $i"; logged_system_call "
 bash /erb.templates/render.sh
 bash /bootstrap.sh
 chown -R webapp:webapp /home/webapp &
-ruby /start_services.rb
+ruby /start_services.rb $SERVICE_NAMES
 
 service --status-all
+echo
 pstree
 
 echo "All services started. Waiting for interrupt..."
-
 
 tail --pid=$$ -f /dev/null

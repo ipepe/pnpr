@@ -2,7 +2,7 @@
 
 WITHOUT_SERVICE_NAMES = ENV["WITHOUT_SERVICE_NAMES"].to_s.split(",").map(&:strip)
 
-DEFAULT_SERVICE_NAMES = ENV["SERVICE_NAMES"].to_s.split(",").map(&:strip)
+DEFAULT_SERVICE_NAMES = ARGV[0].to_s.split(",").map(&:strip)
 
 SERVICE_NAMES = (
   DEFAULT_SERVICE_NAMES - WITHOUT_SERVICE_NAMES
@@ -16,4 +16,6 @@ SERVICE_NAMES.each do |service_name|
   system("service #{service_name} start")
 end
 
-system("foremand start")
+if SERVICE_NAMES.include?("foremand-supervisor")
+  system("foremand start")
+end
