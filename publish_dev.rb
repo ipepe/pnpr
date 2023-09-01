@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 RUBY_VERSIONS = [
-  "2.3.1"
+  "2.3.1", "3.1.4"
 ].freeze
 
-NODE_VERSIONS = ["10"].freeze
+NODE_VERSIONS = ["10", "18"].freeze
 
 NODE_VERSIONS.each do |node_version|
   RUBY_VERSIONS.each do |ruby_version|
