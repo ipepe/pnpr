@@ -6,9 +6,13 @@ trap 'for i in "${SERVICE_NAMES[@]}"; do log "Stopping $i"; logged_system_call "
 bash /erb.templates/render.sh
 bash /bootstrap.sh
 chown -R webapp:webapp /home/webapp &
+
+service --status-all
+
 ruby /start_services.rb $(echo "${SERVICE_NAMES[@]}")
 
 service --status-all
+
 echo
 pstree
 
