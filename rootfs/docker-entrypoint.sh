@@ -17,5 +17,5 @@ echo
 pstree
 
 echo "All services started. Waiting for interrupt..."
-
+wait
 tail --pid=$$ -f /dev/null
