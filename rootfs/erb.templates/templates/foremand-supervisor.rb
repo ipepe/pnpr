@@ -37,7 +37,7 @@ TEMPLATE = <<~ERB.freeze
       $0 start
       ;;
     status)
-      kill -0 `cat /var/run/foreman-server.pid` > /dev/null 2>&1
+      test -f /var/run/foreman-server.pid && kill -0 `cat /var/run/foreman-server.pid` > /dev/null 2>&1
       ;;
     *)
       log_action_msg "Usage: $0 {start|stop|restart|force-reload|status}"
