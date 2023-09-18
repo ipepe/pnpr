@@ -12,7 +12,7 @@ RUBY_NODE_VERSIONS = [
   "2.3.1" => ["10", "12", "14", "16", "18"],
 ].freeze
 
-RUBY_NODE_VERSIONS.each do |ruby_version|
+RUBY_NODE_VERSIONS.each do |ruby_version, node_version|
   image_tag = "v3.3-u20.04-r#{ruby_version}-n#{node_version}"
   image_name = "ipepe/pnpr:#{image_tag}"
   env_level = "production"
