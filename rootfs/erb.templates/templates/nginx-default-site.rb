@@ -15,7 +15,7 @@ WITH_ACTION_CABLE = !ENV.fetch("NO_ACTION_CABLE", false)
 
 CABLE_PASSENGER_FORCE_MAX_CONCURRENT_REQUESTS_PER_PROCESS = ENV.fetch(
   "CABLE_PASSENGER_FORCE_MAX_CONCURRENT_REQUESTS_PER_PROCESS",
-  0
+  1000
 ).to_i
 
 PASSENGER_MAX_REQUESTS = ENV.fetch(
@@ -50,8 +50,9 @@ TEMPLATE = <<~ERB.freeze
           passenger_app_group_name rails_action_cable;
           passenger_app_env <%= RAILS_ENV %>;
           passenger_friendly_error_pages <%= FRIENDLY_ERROR_PAGES %>;
+          passenger_max_requests <%= PASSENGER_MAX_REQUESTS %>;
           passenger_env_var RAILS_CABLE_PROCESS true;
-          passenger_force_max_concurrent_requests_per_process 0;
+          passenger_force_max_concurrent_requests_per_process <%= CABLE_PASSENGER_FORCE_MAX_CONCURRENT_REQUESTS_PER_PROCESS %>;
       }
       <% end %>
 
