@@ -5,3 +5,5 @@ docker-compose.*
 README.md
 LICENSE
 .gitignore
+publish.rb
+publish_dev.rb
