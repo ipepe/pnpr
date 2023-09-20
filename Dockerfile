@@ -54,8 +54,7 @@ ARG NODE_MAJOR_VERSION=10
 # https://github.com/nodesource/distributions/blob/master/README.md#using-debian-as-root-2
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR_VERSION}.x | bash - &&\
     apt-get install --no-install-recommends -y nodejs &&  \
-    apt-get clean && rm -rf  /tmp/* /var/tmp/* && \
-    npm install -g npm
+    apt-get clean && rm -rf  /tmp/* /var/tmp/*
 
 # setup passenger-prometheus monitoring
 COPY --from=zappi/passenger-exporter:1.0.0 /opt/app/bin/passenger-exporter /usr/local/bin/passenger-exporter

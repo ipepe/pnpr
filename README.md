@@ -7,6 +7,7 @@ Run Your passenger nginx postgres ruby the simple way
  * 3.3
    * 3.3.1 - Change docker-entrypoint.rb to docker-entrypoint.sh to lower memory usage
    * 3.3.2 - Add `passenger_max_requests=3000` and `passenger_force_max_concurrent_requests_per_process=1000` to `/cable`
+   * 3.3.3 - Remove `npm install -g npm`
 
 
 ## Image naming meaing
