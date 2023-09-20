@@ -63,7 +63,8 @@ COPY rootfs /
 
 # setup logrotate
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
-RUN chmod g+x,o+x /home/webapp &&  \
+RUN chown -R webapp:webapp /usr/lib/node_modules && \
+    chmod g+x,o+x /home/webapp &&  \
     chmod +x /docker-entrypoint.sh && \
     chmod +x /usr/local/bin/foremand && \
     chmod +x /usr/local/bin/foremand-supervisor && \
