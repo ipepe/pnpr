@@ -47,14 +47,15 @@ RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
     /home/webapp/.rbenv/shims/gem install foreman && \
     /home/webapp/.rbenv/bin/rbenv rehash
 
-USER root
-
-# install node
+# install node using nvm
 ARG NODE_MAJOR_VERSION=10
-# https://github.com/nodesource/distributions/blob/master/README.md#using-debian-as-root-2
-RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR_VERSION}.x | bash - &&\
-    apt-get install --no-install-recommends -y nodejs &&  \
-    apt-get clean && rm -rf  /tmp/* /var/tmp/*
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash && \
+    chmod +x /home/webapp/.nvm/nvm.sh && \
+    /home/webapp/.nvm/nvm.sh install ${NODE_MAJOR_VERSION} && \
+    /home/webapp/.nvm/nvm.sh use ${NODE_MAJOR_VERSION} && \
+    /home/webapp/.nvm/nvm.sh alias default ${NODE_MAJOR_VERSION}
+
+USER root
 
 # setup passenger-prometheus monitoring
 COPY --from=zappi/passenger-exporter:1.0.0 /opt/app/bin/passenger-exporter /usr/local/bin/passenger-exporter
@@ -63,8 +64,7 @@ COPY rootfs /
 
 # setup logrotate
 # https://www.juhomi.com/how-to-rotate-log-files-in-your-rails-application/
-RUN chown -R webapp:webapp /usr/lib/node_modules && \
-    chmod g+x,o+x /home/webapp &&  \
+RUN chmod g+x,o+x /home/webapp &&  \
     chmod +x /docker-entrypoint.sh && \
     chmod +x /usr/local/bin/foremand && \
     chmod +x /usr/local/bin/foremand-supervisor && \
