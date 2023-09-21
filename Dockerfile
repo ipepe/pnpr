@@ -47,16 +47,13 @@ RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
     /home/webapp/.rbenv/shims/gem install foreman && \
     /home/webapp/.rbenv/bin/rbenv rehash
 
-# install node using nodenv
-ARG NODE_MAJOR_VERSION=12
-RUN git clone https://github.com/nodenv/nodenv.git /home/webapp/.nodenv && \
-    git clone https://github.com/nodenv/node-build.git /home/webapp/.nodenv/plugins/node-build && \
-    echo "export PATH=/home/webapp/.nodenv/bin:/home/webapp/.nodenv/shims:\$PATH" >> /home/webapp/.bashrc && \
-    echo "export NODENV_ROOT=/home/webapp/.nodenv" >> /home/webapp/.bashrc
-RUN LATEST_NODE_VERSION=$(/home/webapp/.nodenv/bin/nodenv install --list | grep "^${NODE_MAJOR_VERSION}" | tail -1) && \
-    /home/webapp/.nodenv/bin/nodenv install ${LATEST_NODE_VERSION} && \
-    /home/webapp/.nodenv/bin/nodenv global ${LATEST_NODE_VERSION} && \
-    /home/webapp/.nodenv/bin/nodenv rehash
+# install node using nvm
+ARG NODE_MAJOR_VERSION=10
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash && \
+    chmod +x /home/webapp/.nvm/nvm.sh && \
+    /home/webapp/.nvm/nvm.sh install ${NODE_MAJOR_VERSION} && \
+    /home/webapp/.nvm/nvm.sh use ${NODE_MAJOR_VERSION} && \
+    /home/webapp/.nvm/nvm.sh alias default ${NODE_MAJOR_VERSION}
 
 USER root
 
@@ -72,8 +69,6 @@ RUN chmod g+x,o+x /home/webapp &&  \
     chmod +x /usr/local/bin/foremand && \
     chmod +x /usr/local/bin/foremand-supervisor && \
     chmod 0600 /etc/logrotate.d/* && \
-    ln -s /home/webapp/.nodenv/shims/npm /usr/bin/npm && \
-    ln -s /home/webapp/.nodenv/shims/node /usr/bin/node && \
     rm /etc/init.d/dbus /etc/init.d/hwclock.sh /etc/init.d/procps && \
     (crontab -l; echo "33 3 * * * /usr/sbin/logrotate /etc/logrotate.d/*") | crontab -
 
