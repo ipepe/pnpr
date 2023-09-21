@@ -56,7 +56,9 @@ RUN git clone https://github.com/nodenv/nodenv.git /home/webapp/.nodenv && \
 RUN LATEST_NODE_VERSION=$(/home/webapp/.nodenv/bin/nodenv install --list | grep "^${NODE_MAJOR_VERSION}" | tail -1) && \
     /home/webapp/.nodenv/bin/nodenv install ${LATEST_NODE_VERSION} && \
     /home/webapp/.nodenv/bin/nodenv global ${LATEST_NODE_VERSION} && \
-    /home/webapp/.nodenv/bin/nodenv rehash
+    /home/webapp/.nodenv/bin/nodenv rehash && \
+    ln -s /home/webapp/.nodenv/shims/npm /usr/bin/npm && \
+    ln -s /home/webapp/.nodenv/shims/node /usr/bin/node
 
 USER root
 
