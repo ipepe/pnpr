@@ -36,8 +36,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
 # setup rbenv and install ruby
 USER webapp
 ARG RUBY_VERSION=2.7.5
-RUN git clone https://github.com/sstephenson/rbenv.git /home/webapp/.rbenv && \
-    git clone https://github.com/sstephenson/ruby-build.git /home/webapp/.rbenv/plugins/ruby-build && \
+RUN git clone https://github.com/rbenv/rbenv.git /home/webapp/.rbenv && \
+    git clone https://github.com/rbenv/ruby-build.git /home/webapp/.rbenv/plugins/ruby-build && \
     echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:\$PATH" >> /home/webapp/.bashrc && \
     echo "export RBENV_ROOT=/home/webapp/.rbenv" >> /home/webapp/.bashrc && \
     echo "gem: --no-rdoc --no-ri" > /home/webapp/.gemrc
@@ -47,13 +47,16 @@ RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
     /home/webapp/.rbenv/shims/gem install foreman && \
     /home/webapp/.rbenv/bin/rbenv rehash
 
-# install node using nvm
-ARG NODE_MAJOR_VERSION=10
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash && \
-    chmod +x /home/webapp/.nvm/nvm.sh && \
-    /home/webapp/.nvm/nvm.sh install ${NODE_MAJOR_VERSION} && \
-    /home/webapp/.nvm/nvm.sh use ${NODE_MAJOR_VERSION} && \
-    /home/webapp/.nvm/nvm.sh alias default ${NODE_MAJOR_VERSION}
+# install node using nodenv
+ARG NODE_MAJOR_VERSION=12
+RUN git clone https://github.com/nodenv/nodenv.git /home/webapp/.nodenv && \
+    git clone https://github.com/nodenv/node-build.git /home/webapp/.nodenv/plugins/node-build && \
+    echo "export PATH=/home/webapp/.nodenv/bin:/home/webapp/.nodenv/shims:\$PATH" >> /home/webapp/.bashrc && \
+    echo "export NODENV_ROOT=/home/webapp/.nodenv" >> /home/webapp/.bashrc
+RUN LATEST_NODE_VERSION=$(/home/webapp/.nodenv/bin/nodenv install --list | grep "^${NODE_MAJOR_VERSION}" | tail -1) && \
+    /home/webapp/.nodenv/bin/nodenv install ${LATEST_NODE_VERSION} && \
+    /home/webapp/.nodenv/bin/nodenv global ${LATEST_NODE_VERSION} && \
+    /home/webapp/.rbenv/bin/rbenv rehash
 
 USER root
 
