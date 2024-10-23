@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 
 {
-  "18" => "3.1.4",
-  "10" => "2.3.1"
+  "10" => "3.3.5"
 }.each do |node_version, ruby_version|
   image_tag = "dev-u20.04-r#{ruby_version}-n#{node_version}"
   image_name = "ipepe/pnpr:#{image_tag}"
