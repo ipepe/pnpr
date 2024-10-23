@@ -11,7 +11,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
     echo 'LANGUAGE="en_US:en"' >> /etc/default/locale && \
     apt-get install --no-install-recommends -y  \
     wget nano htop git curl cron gosu psmisc \
-    imagemagick \
+    imagemagick libvips \
+    libjemalloc-dev libyaml-dev libffi-dev rustc build-essential \
     shared-mime-info \
     openssh-server redis \
     logrotate \
@@ -43,7 +44,6 @@ RUN git clone https://github.com/sstephenson/rbenv.git /home/webapp/.rbenv && \
     echo "gem: --no-rdoc --no-ri" > /home/webapp/.gemrc
 RUN /home/webapp/.rbenv/bin/rbenv install ${RUBY_VERSION} && \
     /home/webapp/.rbenv/bin/rbenv global ${RUBY_VERSION} && \
-    /home/webapp/.rbenv/shims/gem install bundler:1.17.3 && \
     /home/webapp/.rbenv/shims/gem install foreman && \
     /home/webapp/.rbenv/bin/rbenv rehash
 
