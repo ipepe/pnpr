@@ -12,7 +12,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
     apt-get install --no-install-recommends -y  \
     wget nano htop git curl cron gosu psmisc \
     imagemagick libvips \
-    libjemalloc-dev libyaml-dev libffi-dev rustc build-essential \
+    libjemalloc-dev libyaml-dev libffi-dev build-essential \
     shared-mime-info \
     openssh-server redis \
     logrotate \
