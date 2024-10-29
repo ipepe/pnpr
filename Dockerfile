@@ -36,8 +36,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y locales && \
 # setup rbenv and install ruby
 USER webapp
 ARG RUBY_VERSION=2.7.5
-RUN git clone https://github.com/sstephenson/rbenv.git /home/webapp/.rbenv && \
-    git clone https://github.com/sstephenson/ruby-build.git /home/webapp/.rbenv/plugins/ruby-build && \
+RUN git clone https://github.com/rbenv/rbenv.git /home/webapp/.rbenv && \
+    git clone https://github.com/rbenv/ruby-build.git /home/webapp/.rbenv/plugins/ruby-build && \
     echo "export PATH=/home/webapp/.rbenv/bin:/home/webapp/.rbenv/shims:\$PATH" >> /home/webapp/.bashrc && \
     echo "export RBENV_ROOT=/home/webapp/.rbenv" >> /home/webapp/.bashrc && \
     echo "gem: --no-rdoc --no-ri" > /home/webapp/.gemrc
